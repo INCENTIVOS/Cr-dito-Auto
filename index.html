@@ -5,548 +5,471 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Incentivos - Crédito Auto</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #F1F5F9; color: #1E293B; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 90px; }
+        /* ESTILOS NATIVOS RÁPIDOS Y LIGEROS */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #F1F5F9; color: #0F172A; padding-bottom: 40px; }
         
-        /* Paleta y Contenedores */
-        .header { background: #005CB9; color: #FFFFFF; padding: 16px 20px 20px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 40; }
-        .wrapper { max-width: 440px; margin: 0 auto; width: 100%; }
+        .container { max-width: 460px; margin: 0 auto; padding: 12px; }
         
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .header-title { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
-        .header-sub { font-size: 13px; color: #BFDBFE; font-weight: 500; }
-        .badge-year { background: rgba(0, 40, 85, 0.6); color: #FEDB00; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; }
-
-        /* Segmented Control (Tabs) */
-        .nav-tabs { display: flex; background: rgba(0, 40, 85, 0.45); padding: 4px; border-radius: 12px; gap: 4px; }
-        .tab-btn { flex: 1; border: none; background: transparent; color: #DBEAFE; font-size: 12px; font-weight: 600; padding: 8px 6px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
-        .tab-btn.active { background: #FFFFFF; color: #005CB9; box-shadow: 0 2px 6px rgba(0,0,0,0.15); font-weight: 800; }
-
+        /* Cabecera */
+        .header { background: #005CB9; color: #FFF; padding: 16px; border-radius: 14px; margin-bottom: 12px; }
+        .header h1 { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+        .header p { font-size: 12px; color: #BFDBFE; }
+        
+        /* Pestañas */
+        .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+        .tab-btn { flex: 1; padding: 10px 4px; border: 1px solid #CBD5E1; background: #FFF; color: #475569; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; }
+        .tab-btn.active { background: #005CB9; color: #FFF; border-color: #005CB9; }
+        
         /* Tarjetas */
-        main { padding: 16px; flex: 1; }
-        .card { background: #FFFFFF; border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
-        .card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B; letter-spacing: 0.5px; text-align: center; margin-bottom: 12px; }
-
-        /* Contador numérico */
-        .counter-box { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 8px 0 16px; }
-        .btn-circle { width: 50px; height: 50px; border-radius: 14px; border: 1px solid #CBD5E1; background: #F8FAFC; font-size: 24px; font-weight: 700; color: #334155; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
-        .btn-circle.primary { background: #005CB9; color: #FFFFFF; border: none; box-shadow: 0 4px 10px rgba(0,92,185,0.3); }
-        .btn-circle:active { transform: scale(0.95); }
-        .input-num { width: 80px; font-size: 36px; font-weight: 900; color: #005CB9; text-align: center; border: none; background: transparent; outline: none; }
-
-        /* Barra de Progreso */
-        .progress-box { background: #F8FAFC; border-radius: 12px; padding: 12px; border: 1px solid #E2E8F0; }
-        .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
-        .tag-next { background: #FEF3C7; color: #92400E; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
-        .progress-track { height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden; }
-        .progress-bar { height: 100%; background: #005CB9; width: 0%; border-radius: 99px; transition: width 0.3s ease; }
-        .progress-info { font-size: 11px; color: #64748B; text-align: center; margin-top: 6px; font-weight: 500; }
-
-        /* Switch Toggle */
-        .switch-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-        .switch-title { font-size: 13px; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
-        .switch-desc { font-size: 11px; color: #64748B; line-height: 1.3; }
-        .toggle { position: relative; width: 44px; height: 24px; min-width: 44px; }
-        .toggle input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #CBD5E1; transition: .3s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: #005CB9; }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        /* Tarjeta Oscura de Resultados */
-        .card-receipt { background: #0F172A; color: #FFFFFF; border-radius: 18px; padding: 20px; box-shadow: 0 10px 25px -5px rgba(15,23,42,0.4); margin-bottom: 14px; }
-        .receipt-caption { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94A3B8; font-weight: 700; }
-        .receipt-amount { font-size: 34px; font-weight: 900; color: #FEDB00; margin: 4px 0 14px; }
-        .receipt-row { display: flex; justify-content: space-between; font-size: 13px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; }
-        .receipt-row strong { color: #FFFFFF; font-weight: 700; }
-
-        /* Timeline Curva */
-        .timeline { display: flex; justify-content: space-between; margin: 12px 0 18px; position: relative; }
-        .timeline:before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: #E2E8F0; z-index: 1; transform: translateY(-50%); }
-        .step-btn { position: relative; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 2px solid #CBD5E1; background: #FFFFFF; color: #64748B; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .step-btn.active { border-color: #005CB9; background: #005CB9; color: #FFFFFF; box-shadow: 0 0 0 4px #DBEAFE; }
-
-        /* Supervisor Slider */
-        .slider-full { width: 100%; height: 6px; background: #E2E8F0; border-radius: 5px; outline: none; margin: 10px 0; accent-color: #005CB9; }
-        .alert-box { background: #FEF2F2; border: 1px solid #FECACA; padding: 12px; border-radius: 12px; margin-top: 12px; }
-
-        /* Botón Inferior Flotante */
-        .footer-fixed { position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 16px; background: linear-gradient(to top, rgba(241,245,249,1) 80%, rgba(241,245,249,0)); z-index: 50; }
-        .btn-save { width: 100%; max-width: 440px; margin: 0 auto; background: #FEDB00; border: none; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: 800; color: #0F172A; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(254,219,0,0.3); }
-        .btn-save:active { transform: scale(0.98); }
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #0F172A; color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100; }
+        .card { background: #FFF; border-radius: 12px; padding: 16px; border: 1px solid #E2E8F0; margin-bottom: 12px; }
+        .card-title { font-size: 12px; font-weight: 800; color: #64748B; text-transform: uppercase; margin-bottom: 10px; }
+        
+        /* Contadores y campos */
+        .counter-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .counter-label { font-size: 13px; font-weight: 700; }
+        .counter-sub { font-size: 11px; color: #64748B; }
+        .counter-controls { display: flex; align-items: center; gap: 8px; }
+        .btn-ctrl { width: 40px; height: 40px; background: #E2E8F0; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; color: #1E293B; }
+        .btn-ctrl.add { background: #005CB9; color: #FFF; }
+        .input-box { width: 55px; height: 40px; text-align: center; font-size: 18px; font-weight: 800; border: 1px solid #CBD5E1; border-radius: 8px; color: #005CB9; background: #FFF; }
+        
+        /* Checklist y Opciones */
+        .check-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 8px; cursor: pointer; }
+        .check-row input { width: 18px; height: 18px; margin-top: 2px; }
+        .check-text { font-size: 12px; font-weight: 600; color: #1E293B; }
+        .check-desc { font-size: 11px; color: #64748B; font-weight: normal; margin-top: 2px; }
+        
+        /* Desglose / Resumen */
+        .info-pill { background: #EFF6FF; border: 1px solid #BFDBFE; padding: 10px; border-radius: 8px; font-size: 12px; color: #1E40AF; margin-bottom: 10px; }
+        .info-pill strong { font-weight: 800; }
+        
+        /* TOTAL GRANDE */
+        .total-box { background: #0F172A; color: #FFF; border-radius: 12px; padding: 18px; text-align: center; margin-top: 12px; }
+        .total-title { font-size: 11px; text-transform: uppercase; color: #94A3B8; font-weight: 700; letter-spacing: 0.5px; }
+        .total-amount { font-size: 32px; font-weight: 900; color: #FEDB00; margin: 4px 0 10px; }
+        .breakdown { border-top: 1px solid #334155; padding-top: 8px; font-size: 12px; text-align: left; }
+        .breakdown-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: #CBD5E1; }
+        .breakdown-row strong { color: #FFF; }
         
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Header con Menú Rápido -->
+<div class="container">
+
+    <!-- Encabezado -->
     <header class="header">
-        <div class="wrapper">
-            <div class="header-top">
-                <div>
-                    <div class="header-title">Mis Incentivos</div>
-                    <div class="header-sub">Crédito Automotriz</div>
-                </div>
-                <div class="badge-year">2026</div>
-            </div>
-            <nav class="nav-tabs">
-                <button onclick="changeTab('tab-senior', this)" class="tab-btn active">Promotor (+5m)</button>
-                <button onclick="changeTab('tab-junior', this)" class="tab-btn">Curva (0-5m)</button>
-                <button onclick="changeTab('tab-sup', this)" class="tab-btn">Supervisor</button>
-            </nav>
-        </div>
+        <h1>Calculadora de Incentivos</h1>
+        <p>Crédito Automotriz</p>
     </header>
 
-    <div id="toast" class="toast">Guardado en el dispositivo</div>
+    <!-- Selector de Rol -->
+    <nav class="tabs">
+        <button type="button" class="tab-btn active" onclick="showTab('senior', this)">Promotor (+5m)</button>
+        <button type="button" class="tab-btn" onclick="showTab('junior', this)">Curva (0-5m)</button>
+        <button type="button" class="tab-btn" onclick="showTab('sup', this)">Supervisor</button>
+    </nav>
 
-    <main class="wrapper">
-
-        <!-- ========================================== -->
-        <!-- PESTAÑA 1: PROMOTOR CONSOLIDADO (+5 MESES) -->
-        <!-- ========================================== -->
-        <section id="tab-senior">
-            <div class="card">
-                <div class="card-title">Unidades Colocadas en el Mes</div>
-                <div class="counter-box">
-                    <button type="button" onclick="modifyUnits(-1)" class="btn-circle">-</button>
-                    <input type="number" id="senior-units" value="5" min="0" oninput="calculateSenior()" class="input-num">
-                    <button type="button" onclick="modifyUnits(1)" class="btn-circle primary">+</button>
-                </div>
-
-                <div class="progress-box">
-                    <div class="progress-header">
-                        <span>Nivel: <strong id="senior-rate-label" style="color: #005CB9;">$1,800 c/u</strong></span>
-                        <span id="senior-badge-next" class="tag-next">Siguiente nivel</span>
-                    </div>
-                    <div class="progress-track">
-                        <div id="senior-bar" class="progress-bar"></div>
-                    </div>
-                    <div id="senior-progress-desc" class="progress-info">Faltan 2 unidades para subir de nivel</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="switch-row">
-                    <div>
-                        <div class="switch-title">Bono Promotor Coach (+$4,000)</div>
-                        <div class="switch-desc">Asesorado completó 4 meses y ambos colocan mín. 5 créditos.</div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" id="senior-coach" onchange="calculateSenior()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="card-receipt">
-                <div class="receipt-caption">Pago Estimado</div>
-                <div class="receipt-amount" id="senior-total-display">$9,000.00</div>
-                <div class="receipt-row">
-                    <span>Comisión Unidades:</span>
-                    <strong id="senior-subtotal-display">$9,000.00</strong>
-                </div>
-                <div class="receipt-row">
-                    <span>Bono Coach:</span>
-                    <strong id="senior-coach-display">$0.00</strong>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================== -->
-        <!-- PESTAÑA 2: CURVA DE APRENDIZAJE (0 A 5 M)  -->
-        <!-- ========================================== -->
-        <section id="tab-junior" class="hidden">
-            <div class="card">
-                <div class="card-title">Mes de Antigüedad</div>
-                <div class="timeline">
-                    <button type="button" onclick="setJuniorMonth(0)" class="step-btn active">0</button>
-                    <button type="button" onclick="setJuniorMonth(1)" class="step-btn">1</button>
-                    <button type="button" onclick="setJuniorMonth(2)" class="step-btn">2</button>
-                    <button type="button" onclick="setJuniorMonth(3)" class="step-btn">3</button>
-                    <button type="button" onclick="setJuniorMonth(4)" class="step-btn">4</button>
-                    <button type="button" onclick="setJuniorMonth(5)" class="step-btn">5</button>
-                </div>
-
-                <div id="junior-phase-card" style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px; padding:10px; text-align:center; margin-bottom:12px;">
-                    <strong id="junior-phase-title" style="color:#005CB9; font-size:13px; display:block;">Mes 0: Onboarding</strong>
-                    <span id="junior-phase-info" style="font-size:11px; color:#1E40AF;">Cumple cursos normativos e itinerario.</span>
-                </div>
-
-                <div id="junior-box-m0">
-                    <div class="switch-row" style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px; border-radius: 10px;">
-                        <div>
-                            <div class="switch-title" style="color: #92400E;">Capacitaciones y Cursos ($1,500)</div>
-                            <div class="switch-desc">Acreditación completa de inducción.</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="junior-m0-check" checked onchange="calculateJunior()">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div id="junior-box-ops" class="hidden">
-                    <div class="switch-row" style="margin-bottom: 14px;">
-                        <div>
-                            <div class="switch-title">Unidades Colocadas</div>
-                            <div class="switch-desc">$1,500 de pago directo c/u.</div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <button type="button" onclick="modJunior('junior-sales', -1)" class="btn-circle" style="width:36px; height:36px; font-size:18px;">-</button>
-                            <input type="number" id="junior-sales" value="2" min="0" oninput="calculateJunior()" style="width:40px; text-align:center; font-weight:800; border:none; background:transparent; font-size:18px; color:#005CB9;">
-                            <button type="button" onclick="modJunior('junior-sales', 1)" class="btn-circle primary" style="width:36px; height:36px; font-size:18px;">+</button>
-                        </div>
-                    </div>
-
-                    <div id="junior-reqs-row" class="switch-row" style="border-top:1px solid #E2E8F0; padding-top:12px;">
-                        <div>
-                            <div class="switch-title">Solicitudes Completas</div>
-                            <div class="switch-desc" id="junior-reqs-legend">Bonificación por expedientes.</div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <button type="button" onclick="modJunior('junior-reqs', -1)" class="btn-circle" style="width:36px; height:36px; font-size:18px;">-</button>
-                            <input type="number" id="junior-reqs" value="3" min="0" oninput="calculateJunior()" style="width:40px; text-align:center; font-weight:800; border:none; background:transparent; font-size:18px; color:#005CB9;">
-                            <button type="button" onclick="modJunior('junior-reqs', 1)" class="btn-circle" style="width:36px; height:36px; font-size:18px; background:#0F172A; color:#FFF; border:none;">+</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-receipt">
-                <div class="receipt-caption">Total Percibido (Curva)</div>
-                <div class="receipt-amount" id="junior-total-display">$1,500.00</div>
-                <div class="receipt-row">
-                    <span>Por Colocaciones:</span>
-                    <strong id="junior-sub-sales">$0.00</strong>
-                </div>
-                <div class="receipt-row">
-                    <span>Por Cursos / Solicitudes:</span>
-                    <strong id="junior-sub-extra">$1,500.00</strong>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================== -->
-        <!-- PESTAÑA 3: SUPERVISOR                      -->
-        <!-- ========================================== -->
-        <section id="tab-sup" class="hidden">
-            <div class="card">
-                <div style="display:flex; background:#F1F5F9; border-radius:10px; padding:3px; gap:4px; margin-bottom:14px;">
-                    <button type="button" id="btn-mode-cons" onclick="setSupMode('cons')" class="tab-btn active" style="color:#005CB9;">Consolidado (>3m)</button>
-                    <button type="button" id="btn-mode-adap" onclick="setSupMode('adap')" class="tab-btn" style="color:#64748B;">Adaptación (0-3m)</button>
-                </div>
-
-                <div id="sup-view-cons">
-                    <div style="margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <span style="font-size:13px; font-weight:700;">% Promotores Comisionando</span>
-                            <strong id="sup-pct-label" style="font-size:16px; color:#16A34A;">80%</strong>
-                        </div>
-                        <input type="range" id="sup-pct-range" min="0" max="100" value="80" oninput="updateSupSlider(this.value); calculateSupervisor()" class="slider-full">
-                        <div style="display:flex; justify-content:space-between; font-size:10px; color:#94A3B8;">
-                            <span>0%</span><span>Meta: ≥ 80%</span><span>100%</span>
-                        </div>
-                    </div>
-
-                    <div class="switch-row" style="background:#F8FAFC; padding:10px; border-radius:10px; margin-bottom:12px;">
-                        <span style="font-size:13px; font-weight:700;">Colocaciones del Equipo</span>
-                        <input type="number" id="sup-units" value="35" oninput="calculateSupervisor()" style="width:60px; padding:6px; font-weight:800; text-align:center; border:1px solid #CBD5E1; border-radius:8px; background:#FFF; font-size:16px;">
-                    </div>
-
-                    <div class="alert-box">
-                        <div class="switch-row">
-                            <div>
-                                <div class="switch-title" style="color:#991B1B;">100% Expedientes Completos</div>
-                                <div class="switch-desc" style="color:#B91C1C;">Si falta 1 expediente, se retiene comisión.</div>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="sup-check-candado" checked onchange="calculateSupervisor()">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="sup-view-adap" class="hidden">
-                    <div style="margin-bottom:12px;">
-                        <span style="font-size:12px; font-weight:600; color:#64748B;">Sueldo Base Mensual</span>
-                        <input type="number" id="sup-salary" value="18000" oninput="calculateSupervisor()" style="width:100%; padding:10px; border-radius:10px; border:1px solid #CBD5E1; font-weight:800; font-size:16px; margin-top:4px;">
-                    </div>
-                    <div class="switch-row" style="padding:8px 0; border-bottom:1px solid #F1F5F9;">
-                        <span style="font-size:12px; font-weight:600;">Cumplimiento de itinerario</span>
-                        <input type="checkbox" id="sup-chk-1" checked onchange="calculateSupervisor()" style="width:20px; height:20px;">
-                    </div>
-                    <div class="switch-row" style="padding:8px 0;">
-                        <span style="font-size:12px; font-weight:600;">Capacitaciones acreditadas</span>
-                        <input type="checkbox" id="sup-chk-2" checked onchange="calculateSupervisor()" style="width:20px; height:20px;">
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-receipt">
-                <div class="receipt-caption">Incentivo Supervisor</div>
-                <div class="receipt-amount" id="sup-total-display">$22,754.00</div>
-                <div id="sup-note-display" style="font-size:11px; color:#93C5FD; font-weight:500;">Cumple meta de retención (≥ 80% de equipo comisionando).</div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Botón Flotante Seguro -->
-    <div class="footer-fixed">
-        <button type="button" onclick="showSavedToast()" class="btn-save">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-            <span>Guardar Mi Cálculo</span>
-        </button>
-    </div>
-
-    <!-- LÓGICA JAVASCRIPT LIGERA -->
-    <script>
-        const currencyFmt = (n) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n);
-
-        // Control de Tabs
-        function changeTab(tabId, btn) {
-            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.remove('hidden');
-            btn.classList.add('active');
-        }
-
-        // Modificador de número universal
-        function modifyUnits(delta) {
-            const input = document.getElementById('senior-units');
-            let val = (parseInt(input.value) || 0) + delta;
-            if (val < 0) val = 0;
-            input.value = val;
-            calculateSenior();
-        }
-
-        // ==========================================
-        // CÁLCULO PROMOTOR (+5 MESES)
-        // ==========================================
-        const seniorScale = [
-            { max: 3, rate: 0, text: "$0 (Mínimo 4 colocaciones)" },
-            { max: 4, rate: 1500, text: "$1,500 c/u (4 créditos)" },
-            { max: 6, rate: 1800, text: "$1,800 c/u (5 a 6 créditos)" },
-            { max: 8, rate: 2600, text: "$2,600 c/u (7 a 8 créditos)" },
-            { max: 12, rate: 3000, text: "$3,000 c/u (9 a 12 créditos)" },
-            { max: 18, rate: 3300, text: "$3,300 c/u (13 a 18 créditos)" },
-            { max: 9999, rate: 3600, text: "$3,600 c/u (19 o más)" }
-        ];
-
-        function calculateSenior() {
-            const units = parseInt(document.getElementById('senior-units').value) || 0;
-            const isCoach = document.getElementById('senior-coach').checked;
-
-            let idx = seniorScale.findIndex(s => units <= s.max);
-            if (idx === -1) idx = seniorScale.length - 1;
+    <!-- ============================================== -->
+    <!-- ROL 1: PROMOTOR CONSOLIDADO (+5 MESES)         -->
+    <!-- ============================================== -->
+    <section id="pane-senior">
+        <div class="card">
+            <div class="card-title">Productividad Mensual</div>
             
-            const current = seniorScale[idx];
-            const next = idx < seniorScale.length - 1 ? seniorScale[idx + 1] : null;
+            <div class="counter-row">
+                <div>
+                    <div class="counter-label">Créditos Colocados</div>
+                    <div class="counter-sub">Mínimo 4 para comisionar</div>
+                </div>
+                <div class="counter-controls">
+                    <button type="button" class="btn-ctrl" onclick="stepVal('senior-units', -1)">-</button>
+                    <input type="number" id="senior-units" value="5" min="0" class="input-box" oninput="runSeniorCalc()">
+                    <button type="button" class="btn-ctrl add" onclick="stepVal('senior-units', 1)">+</button>
+                </div>
+            </div>
 
-            const subtotal = units * current.rate;
-            let coach = 0;
-            const coachDisplay = document.getElementById('senior-coach-display');
+            <div id="senior-bracket-info" class="info-pill">
+                Tabulador actual: <strong>$1,800.00 c/u (5 a 6 créditos)</strong>
+            </div>
 
-            if (isCoach) {
-                if (units >= 5) {
-                    coach = 4000;
-                    coachDisplay.innerText = currencyFmt(coach);
-                    coachDisplay.style.color = "#FFFFFF";
+            <label class="check-row">
+                <input type="checkbox" id="senior-coach" onchange="runSeniorCalc()">
+                <div>
+                    <div class="check-text">Bono Promotor Coach (+$4,000)</div>
+                    <div class="check-desc">Asesorado completó curva de 4 meses y colocó 5 créditos en mes 5 y 6. Requiere que coloques mínimo 5 unidades.</div>
+                </div>
+            </label>
+        </div>
+
+        <div class="total-box">
+            <div class="total-title">Total a Percibir</div>
+            <div class="total-amount" id="senior-total-txt">$9,000.00</div>
+            <div class="breakdown">
+                <div class="breakdown-row">
+                    <span>Comisión por Colocaciones:</span>
+                    <strong id="senior-units-txt">$9,000.00</strong>
+                </div>
+                <div class="breakdown-row">
+                    <span>Bono Coach:</span>
+                    <strong id="senior-coach-txt">$0.00</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- ROL 2: PROMOTOR CURVA (0 A 5 MESES)            -->
+    <!-- ============================================== -->
+    <section id="pane-junior" class="hidden">
+        <div class="card">
+            <div class="card-title">Etapa de la Curva</div>
+            <div style="margin-bottom: 12px;">
+                <select id="junior-month-select" class="input-box" style="width: 100%; text-align: left; padding: 8px; font-size: 13px; height: auto;" onchange="runJuniorCalc()">
+                    <option value="0">Mes 0: Onboarding y Acreditación</option>
+                    <option value="1">Mes 1: Introducción ($1,500 venta + cada 3 solicitudes)</option>
+                    <option value="2">Mes 2: Ejecución ($1,500 venta + cada 7 solicitudes)</option>
+                    <option value="3">Mes 3: Ejecución ($1,500 venta + cada 10 solicitudes)</option>
+                    <option value="4">Mes 4: Afianzamiento ($1,500 por venta)</option>
+                    <option value="5">Mes 5: Afianzamiento ($1,500 por venta)</option>
+                </select>
+            </div>
+
+            <!-- Mes 0 -->
+            <div id="junior-m0-wrap">
+                <label class="check-row" style="background:#FFFBEB; border-color:#FCD34D;">
+                    <input type="checkbox" id="junior-m0-pass" checked onchange="runJuniorCalc()">
+                    <div>
+                        <div class="check-text" style="color:#92400E;">Cursos e Itinerario Acreditados ($1,500)</div>
+                        <div class="check-desc">Pago por cumplimiento de capacitaciones y normativas.</div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Meses 1 a 5 -->
+            <div id="junior-ops-wrap" class="hidden">
+                <div class="counter-row">
+                    <div>
+                        <div class="counter-label">Ventas Concretadas</div>
+                        <div class="counter-sub">$1,500 desde la 1ª colocación</div>
+                    </div>
+                    <div class="counter-controls">
+                        <button type="button" class="btn-ctrl" onclick="stepVal('junior-sales', -1)">-</button>
+                        <input type="number" id="junior-sales" value="2" min="0" class="input-box" oninput="runJuniorCalc()">
+                        <button type="button" class="btn-ctrl add" onclick="stepVal('junior-sales', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="counter-row" id="junior-reqs-row">
+                    <div>
+                        <div class="counter-label">Solicitudes Completas</div>
+                        <div class="counter-sub" id="junior-reqs-help">Incentivo por expediente ingresado</div>
+                    </div>
+                    <div class="counter-controls">
+                        <button type="button" class="btn-ctrl" onclick="stepVal('junior-reqs', -1)">-</button>
+                        <input type="number" id="junior-reqs" value="3" min="0" class="input-box" oninput="runJuniorCalc()">
+                        <button type="button" class="btn-ctrl" style="background:#0F172A; color:#FFF;" onclick="stepVal('junior-reqs', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="total-box">
+            <div class="total-title">Total a Percibir (Curva)</div>
+            <div class="total-amount" id="junior-total-txt">$1,500.00</div>
+            <div class="breakdown">
+                <div class="breakdown-row">
+                    <span>Por Ventas Concretadas:</span>
+                    <strong id="junior-sales-txt">$0.00</strong>
+                </div>
+                <div class="breakdown-row">
+                    <span>Por Cursos / Solicitudes:</span>
+                    <strong id="junior-extra-txt">$1,500.00</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- ROL 3: SUPERVISOR                              -->
+    <!-- ============================================== -->
+    <section id="pane-sup" class="hidden">
+        <div class="card">
+            <div class="card-title">Tipo de Supervisor</div>
+            <div style="margin-bottom: 12px;">
+                <select id="sup-stage" class="input-box" style="width: 100%; text-align: left; padding: 8px; font-size: 13px; height: auto;" onchange="runSupervisorCalc()">
+                    <option value="consolidado">Consolidado (>3 meses) - Esquema Productividad</option>
+                    <option value="adaptacion">Adaptación (0 a 3 meses) - 50% Bono Garantizado</option>
+                </select>
+            </div>
+
+            <!-- Supervisor Consolidado -->
+            <div id="sup-consolidado-wrap">
+                <div class="counter-row">
+                    <div>
+                        <div class="counter-label">Ventas del Equipo</div>
+                        <div class="counter-sub">Colocaciones totales del mes</div>
+                    </div>
+                    <div class="counter-controls">
+                        <button type="button" class="btn-ctrl" onclick="stepVal('sup-team-units', -1)">-</button>
+                        <input type="number" id="sup-team-units" value="35" min="0" class="input-box" oninput="runSupervisorCalc()">
+                        <button type="button" class="btn-ctrl add" onclick="stepVal('sup-team-units', 1)">+</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
+                        <span>% Equipo Comisionando:</span>
+                        <span id="sup-pct-display" style="color:#005CB9;">80%</span>
+                    </div>
+                    <input type="range" id="sup-pct-slider" min="0" max="100" value="80" style="width:100%; height:6px;" oninput="runSupervisorCalc()">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; color:#64748B;">
+                        <span>0%</span><span>Meta: ≥ 80%</span><span>100%</span>
+                    </div>
+                </div>
+
+                <label class="check-row" style="background:#FEF2F2; border-color:#FECACA;">
+                    <input type="checkbox" id="sup-candado-check" checked onchange="runSupervisorCalc()">
+                    <div>
+                        <div class="check-text" style="color:#991B1B;">100% Expedientes Entregados</div>
+                        <div class="check-desc" style="color:#7F1D1D;">Si falta un solo expediente, se retiene el 100% de la comisión.</div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Supervisor Adaptación -->
+            <div id="sup-adaptacion-wrap" class="hidden">
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 12px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Sueldo Base Mensual ($)</label>
+                    <input type="number" id="sup-salary-input" value="18000" class="input-box" style="width: 100%; text-align: left; padding: 8px;" oninput="runSupervisorCalc()">
+                </div>
+                <label class="check-row">
+                    <input type="checkbox" id="sup-adap-itin" checked onchange="runSupervisorCalc()">
+                    <div>
+                        <div class="check-text">Cumplimiento estricto de itinerario</div>
+                    </div>
+                </label>
+                <label class="check-row">
+                    <input type="checkbox" id="sup-adap-train" checked onchange="runSupervisorCalc()">
+                    <div>
+                        <div class="check-text">Acreditación de capacitaciones obligatorias</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="total-box">
+            <div class="total-title">Incentivo Estimado Supervisor</div>
+            <div class="total-amount" id="sup-total-txt">$22,754.00</div>
+            <div class="breakdown">
+                <div id="sup-status-txt" style="color:#BFDBFE; font-size:12px;">Cumple meta de retención (≥ 80% comisionando).</div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // FORMATEADOR SEGURO DE MONEDA (Nunca falla)
+    function money(val) {
+        var n = Number(val) || 0;
+        return '$' + n.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    // CAMBIO DE PESTAÑAS
+    function showTab(tabId, el) {
+        document.getElementById('pane-senior').classList.add('hidden');
+        document.getElementById('pane-junior').classList.add('hidden');
+        document.getElementById('pane-sup').classList.add('hidden');
+        
+        var btns = document.querySelectorAll('.tab-btn');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].classList.remove('active');
+        }
+
+        document.getElementById('pane-' + tabId).classList.remove('hidden');
+        el.classList.add('active');
+    }
+
+    // BOTONES SUMAR / RESTAR
+    function stepVal(id, delta) {
+        var input = document.getElementById(id);
+        var cur = parseInt(input.value) || 0;
+        cur += delta;
+        if (cur < 0) cur = 0;
+        input.value = cur;
+
+        if (id === 'senior-units') runSeniorCalc();
+        else if (id === 'junior-sales' || id === 'junior-reqs') runJuniorCalc();
+        else if (id === 'sup-team-units') runSupervisorCalc();
+    }
+
+    // ==========================================
+    // 1. CÁLCULO PROMOTOR (+5 MESES)
+    // ==========================================
+    function runSeniorCalc() {
+        var units = parseInt(document.getElementById('senior-units').value) || 0;
+        var isCoach = document.getElementById('senior-coach').checked;
+
+        var rate = 0;
+        var bracketText = "";
+
+        if (units >= 19) {
+            rate = 3600;
+            bracketText = "$3,600.00 c/u (19 o más colocaciones)";
+        } else if (units >= 13) {
+            rate = 3300;
+            bracketText = "$3,300.00 c/u (13 a 18 créditos)";
+        } else if (units >= 9) {
+            rate = 3000;
+            bracketText = "$3,000.00 c/u (9 a 12 créditos)";
+        } else if (units >= 7) {
+            rate = 2600;
+            bracketText = "$2,600.00 c/u (7 a 8 créditos)";
+        } else if (units >= 5) {
+            rate = 1800;
+            bracketText = "$1,800.00 c/u (5 a 6 créditos)";
+        } else if (units === 4) {
+            rate = 1500;
+            bracketText = "$1,500.00 c/u (4 créditos exactos)";
+        } else {
+            rate = 0;
+            bracketText = "$0.00 (Mínimo requerido: 4 colocaciones)";
+        }
+
+        var unitsPay = units * rate;
+        var coachPay = 0;
+        var coachTxt = "$0.00";
+
+        if (isCoach) {
+            if (units >= 5) {
+                coachPay = 4000;
+                coachTxt = "$4,000.00";
+            } else {
+                coachPay = 0;
+                coachTxt = "Requiere mín. 5 colocaciones del coach ($0)";
+            }
+        }
+
+        var grandTotal = unitsPay + coachPay;
+
+        document.getElementById('senior-bracket-info').innerHTML = "Tabulador actual: <strong>" + bracketText + "</strong>";
+        document.getElementById('senior-units-txt').innerText = money(unitsPay);
+        document.getElementById('senior-coach-txt').innerText = coachTxt;
+        document.getElementById('senior-total-txt').innerText = money(grandTotal);
+    }
+
+    // ==========================================
+    // 2. CÁLCULO PROMOTOR CURVA (0 A 5 MESES)
+    // ==========================================
+    function runJuniorCalc() {
+        var month = parseInt(document.getElementById('junior-month-select').value) || 0;
+        var m0Wrap = document.getElementById('junior-m0-wrap');
+        var opsWrap = document.getElementById('junior-ops-wrap');
+        var reqsRow = document.getElementById('junior-reqs-row');
+        var reqsHelp = document.getElementById('junior-reqs-help');
+
+        var salesPay = 0;
+        var extraPay = 0;
+
+        if (month === 0) {
+            m0Wrap.classList.remove('hidden');
+            opsWrap.classList.add('hidden');
+            extraPay = document.getElementById('junior-m0-pass').checked ? 1500 : 0;
+        } else {
+            m0Wrap.classList.add('hidden');
+            opsWrap.classList.remove('hidden');
+
+            var sales = parseInt(document.getElementById('junior-sales').value) || 0;
+            salesPay = sales * 1500; // $1,500 por cada crédito formalizado
+
+            var reqs = parseInt(document.getElementById('junior-reqs').value) || 0;
+
+            if (month === 1) {
+                reqsRow.classList.remove('hidden');
+                reqsHelp.innerText = "$1,500 extra por cada 3 solicitudes completas";
+                extraPay = Math.floor(reqs / 3) * 1500;
+            } else if (month === 2) {
+                reqsRow.classList.remove('hidden');
+                reqsHelp.innerText = "$1,500 extra por cada 7 solicitudes completas";
+                extraPay = Math.floor(reqs / 7) * 1500;
+            } else if (month === 3) {
+                reqsRow.classList.remove('hidden');
+                reqsHelp.innerText = "$1,500 extra por cada 10 solicitudes completas";
+                extraPay = Math.floor(reqs / 10) * 1500;
+            } else {
+                reqsRow.classList.add('hidden');
+                extraPay = 0;
+            }
+        }
+
+        var total = salesPay + extraPay;
+        document.getElementById('junior-sales-txt').innerText = money(salesPay);
+        document.getElementById('junior-extra-txt').innerText = money(extraPay);
+        document.getElementById('junior-total-txt').innerText = money(total);
+    }
+
+    // ==========================================
+    // 3. CÁLCULO SUPERVISOR
+    // ==========================================
+    function runSupervisorCalc() {
+        var stage = document.getElementById('sup-stage').value;
+        var consWrap = document.getElementById('sup-consolidado-wrap');
+        var adapWrap = document.getElementById('sup-adaptacion-wrap');
+        var total = 0;
+        var statusTxt = "";
+
+        if (stage === 'adaptacion') {
+            consWrap.classList.add('hidden');
+            adapWrap.classList.remove('hidden');
+
+            var salary = parseFloat(document.getElementById('sup-salary-input').value) || 0;
+            var okItin = document.getElementById('sup-adap-itin').checked;
+            var okTrain = document.getElementById('sup-adap-train').checked;
+
+            if (okItin && okTrain) {
+                total = salary * 0.50; // Bono mensual garantizado 50%
+                statusTxt = "Cumple objetivos clave: Bono garantizado del 50%.";
+            } else {
+                total = 0;
+                statusTxt = "Falta acreditar itinerario o capacitaciones obligatorias.";
+            }
+        } else {
+            consWrap.classList.remove('hidden');
+            adapWrap.classList.add('hidden');
+
+            var hasFiles = document.getElementById('sup-candado-check').checked;
+            var pct = parseInt(document.getElementById('sup-pct-slider').value) || 0;
+            var units = parseInt(document.getElementById('sup-team-units').value) || 0;
+
+            document.getElementById('sup-pct-display').innerText = pct + "%";
+
+            if (!hasFiles) {
+                total = 0;
+                statusTxt = "Comisión retenida 100% por falta de expedientes completos.";
+            } else {
+                var factor = pct >= 80 ? 1.0 : (pct / 80);
+                total = (units * 450 + 7000) * factor;
+
+                if (pct >= 80) {
+                    statusTxt = "Cumple meta de retención (≥ 80% del equipo comisionando).";
                 } else {
-                    coach = 0;
-                    coachDisplay.innerText = "Mín. 5 ventas para cobrar";
-                    coachDisplay.style.color = "#F87171";
-                }
-            } else {
-                coachDisplay.innerText = "$0.00";
-                coachDisplay.style.color = "#FFFFFF";
-            }
-
-            document.getElementById('senior-rate-label').innerText = current.text;
-            document.getElementById('senior-subtotal-display').innerText = currencyFmt(subtotal);
-            document.getElementById('senior-total-display').innerText = currencyFmt(subtotal + coach);
-
-            // Barra de progreso
-            const bar = document.getElementById('senior-bar');
-            const desc = document.getElementById('senior-progress-desc');
-            const badge = document.getElementById('senior-badge-next');
-
-            if (next) {
-                const prev = idx === 0 ? 0 : seniorScale[idx - 1].max;
-                const pct = Math.max(8, ((units - prev) / (current.max - prev)) * 100);
-                bar.style.width = Math.min(100, pct) + "%";
-                bar.style.background = "#005CB9";
-                const needed = current.max - units + 1;
-                desc.innerHTML = `Falta <strong>${needed} crédito${needed>1?'s':''}</strong> para cobrar a ${currencyFmt(next.rate)} c/u`;
-                badge.style.display = "block";
-            } else {
-                bar.style.width = "100%";
-                bar.style.background = "#16A34A";
-                desc.innerHTML = "<strong>¡Nivel máximo alcanzado!</strong> ($3,600 c/u)";
-                badge.style.display = "none";
-            }
-        }
-
-        // ==========================================
-        // CÁLCULO CURVA (0 A 5 MESES)
-        // ==========================================
-        let currentJuniorMonth = 0;
-
-        function setJuniorMonth(m) {
-            currentJuniorMonth = m;
-            document.querySelectorAll('.timeline .step-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === m);
-            });
-
-            const pTitle = document.getElementById('junior-phase-title');
-            const pInfo = document.getElementById('junior-phase-info');
-            const boxM0 = document.getElementById('junior-box-m0');
-            const boxOps = document.getElementById('junior-box-ops');
-            const reqsRow = document.getElementById('junior-reqs-row');
-            const reqsLegend = document.getElementById('junior-reqs-legend');
-
-            if (m === 0) {
-                pTitle.innerText = "Mes 0: Onboarding";
-                pInfo.innerText = "Cumple cursos normativos e itinerario.";
-                boxM0.classList.remove('hidden');
-                boxOps.classList.add('hidden');
-            } else {
-                boxM0.classList.add('hidden');
-                boxOps.classList.remove('hidden');
-
-                if (m === 1) {
-                    pTitle.innerText = "Mes 1: Introducción";
-                    pInfo.innerText = "Venta directa + incentivo cada 3 solicitudes.";
-                    reqsRow.classList.remove('hidden');
-                    reqsLegend.innerText = "$1,500 extra cada 3 solicitudes.";
-                } else if (m === 2) {
-                    pTitle.innerText = "Mes 2: Ejecución";
-                    pInfo.innerText = "Venta directa + incentivo cada 7 solicitudes.";
-                    reqsRow.classList.remove('hidden');
-                    reqsLegend.innerText = "$1,500 extra cada 7 solicitudes.";
-                } else if (m === 3) {
-                    pTitle.innerText = "Mes 3: Ejecución";
-                    pInfo.innerText = "Venta directa + incentivo cada 10 solicitudes.";
-                    reqsRow.classList.remove('hidden');
-                    reqsLegend.innerText = "$1,500 extra cada 10 solicitudes.";
-                } else {
-                    pTitle.innerText = `Mes ${m}: Afianzamiento`;
-                    pInfo.innerText = "$1,500 directo desde tu primera colocación.";
-                    reqsRow.classList.add('hidden');
+                    statusTxt = "Equipo por debajo de la meta del 80%. Aplica factor de ajuste.";
                 }
             }
-            calculateJunior();
         }
 
-        function modJunior(id, d) {
-            const el = document.getElementById(id);
-            let val = (parseInt(el.value) || 0) + d;
-            if (val < 0) val = 0;
-            el.value = val;
-            calculateJunior();
-        }
+        document.getElementById('sup-total-txt').innerText = money(total);
+        document.getElementById('sup-status-txt').innerText = statusTxt;
+    }
 
-        function calculateJunior() {
-            let salesTotal = 0;
-            let extraTotal = 0;
+    // EJECUCIÓN INMEDIATA AL ABRIR LA PÁGINA
+    runSeniorCalc();
+    runJuniorCalc();
+    runSupervisorCalc();
+</script>
 
-            if (currentJuniorMonth === 0) {
-                extraTotal = document.getElementById('junior-m0-check').checked ? 1500 : 0;
-            } else {
-                const sales = parseInt(document.getElementById('junior-sales').value) || 0;
-                salesTotal = sales * 1500;
-
-                const reqs = parseInt(document.getElementById('junior-reqs').value) || 0;
-                if (currentJuniorMonth === 1) extraTotal = Math.floor(reqs / 3) * 1500;
-                else if (currentJuniorMonth === 2) extraTotal = Math.floor(reqs / 7) * 1500;
-                else if (currentJuniorMonth === 3) extraTotal = Math.floor(reqs / 10) * 1500;
-            }
-
-            document.getElementById('junior-sub-sales').innerText = currencyFmt(salesTotal);
-            document.getElementById('junior-sub-extra').innerText = currencyFmt(extraTotal);
-            document.getElementById('junior-total-display').innerText = currencyFmt(salesTotal + extraTotal);
-        }
-
-        // ==========================================
-        // CÁLCULO SUPERVISOR
-        // ==========================================
-        let supervisorMode = 'cons';
-
-        function setSupMode(mode) {
-            supervisorMode = mode;
-            document.getElementById('btn-mode-cons').classList.toggle('active', mode === 'cons');
-            document.getElementById('btn-mode-adap').classList.toggle('active', mode === 'adap');
-            document.getElementById('sup-view-cons').classList.toggle('hidden', mode !== 'cons');
-            document.getElementById('sup-view-adap').classList.toggle('hidden', mode !== 'adap');
-            calculateSupervisor();
-        }
-
-        function updateSupSlider(val) {
-            const label = document.getElementById('sup-pct-label');
-            label.innerText = val + "%";
-            if (val >= 80) label.style.color = "#16A34A";
-            else if (val >= 50) label.style.color = "#D97706";
-            else label.style.color = "#DC2626";
-        }
-
-        function calculateSupervisor() {
-            let total = 0;
-            const note = document.getElementById('sup-note-display');
-
-            if (supervisorMode === 'adap') {
-                const base = parseFloat(document.getElementById('sup-salary').value) || 0;
-                const ok1 = document.getElementById('sup-chk-1').checked;
-                const ok2 = document.getElementById('sup-chk-2').checked;
-
-                if (ok1 && ok2) {
-                    total = base * 0.50;
-                    note.innerText = "Cumple criterios: Bono garantizado del 50%.";
-                    note.style.color = "#86EFAC";
-                } else {
-                    total = 0;
-                    note.innerText = "Se requiere cumplir itinerario y acreditación de cursos.";
-                    note.style.color = "#FCA5A5";
-                }
-            } else {
-                const hasFiles = document.getElementById('sup-check-candado').checked;
-                if (!hasFiles) {
-                    total = 0;
-                    note.innerText = "Comisión retenida 100% por expedientes faltantes.";
-                    note.style.color = "#FCA5A5";
-                } else {
-                    const pct = parseInt(document.getElementById('sup-pct-range').value) || 0;
-                    const units = parseInt(document.getElementById('sup-units').value) || 0;
-                    const factor = pct >= 80 ? 1.0 : (pct / 80);
-                    total = (units * 450 + 7000) * factor;
-
-                    if (pct >= 80) {
-                        note.innerText = "Cumple meta de retención (≥ 80% de equipo comisionando).";
-                        note.style.color = "#86EFAC";
-                    } else {
-                        note.innerText = "Equipo con baja retención. Penalización activa.";
-                        note.style.color = "#FDE68A";
-                    }
-                }
-            }
-
-            document.getElementById('sup-total-display').innerText = currencyFmt(total);
-        }
-
-        function showSavedToast() {
-            const t = document.getElementById('toast');
-            t.style.opacity = '1';
-            setTimeout(() => { t.style.opacity = '0'; }, 1800);
-        }
-
-        // Ejecutar al iniciar
-        window.addEventListener('DOMContentLoaded', () => {
-            calculateSenior();
-            calculateJunior();
-            calculateSupervisor();
-        });
-    </script>
 </body>
 </html>
