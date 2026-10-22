@@ -2,459 +2,177 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Incentivos - Crédito Auto</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F3F4F6;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .bg-brand-blue { background-color: #005CB9; }
-        .text-brand-blue { color: #005CB9; }
-        .bg-brand-yellow { background-color: #FEDB00; }
-        .text-brand-yellow { color: #FEDB00; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #F1F5F9; color: #1E293B; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 90px; }
         
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        /* Paleta y Contenedores */
+        .header { background: #005CB9; color: #FFFFFF; padding: 16px 20px 20px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 40; }
+        .wrapper { max-width: 440px; margin: 0 auto; width: 100%; }
         
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .header-title { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
+        .header-sub { font-size: 13px; color: #BFDBFE; font-weight: 500; }
+        .badge-year { background: rgba(0, 40, 85, 0.6); color: #FEDB00; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; }
+
+        /* Segmented Control (Tabs) */
+        .nav-tabs { display: flex; background: rgba(0, 40, 85, 0.45); padding: 4px; border-radius: 12px; gap: 4px; }
+        .tab-btn { flex: 1; border: none; background: transparent; color: #DBEAFE; font-size: 12px; font-weight: 600; padding: 8px 6px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .tab-btn.active { background: #FFFFFF; color: #005CB9; box-shadow: 0 2px 6px rgba(0,0,0,0.15); font-weight: 800; }
+
+        /* Tarjetas */
+        main { padding: 16px; flex: 1; }
+        .card { background: #FFFFFF; border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
+        .card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B; letter-spacing: 0.5px; text-align: center; margin-bottom: 12px; }
+
+        /* Contador numérico */
+        .counter-box { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 8px 0 16px; }
+        .btn-circle { width: 50px; height: 50px; border-radius: 14px; border: 1px solid #CBD5E1; background: #F8FAFC; font-size: 24px; font-weight: 700; color: #334155; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+        .btn-circle.primary { background: #005CB9; color: #FFFFFF; border: none; box-shadow: 0 4px 10px rgba(0,92,185,0.3); }
+        .btn-circle:active { transform: scale(0.95); }
+        .input-num { width: 80px; font-size: 36px; font-weight: 900; color: #005CB9; text-align: center; border: none; background: transparent; outline: none; }
+
+        /* Barra de Progreso */
+        .progress-box { background: #F8FAFC; border-radius: 12px; padding: 12px; border: 1px solid #E2E8F0; }
+        .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+        .tag-next { background: #FEF3C7; color: #92400E; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+        .progress-track { height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden; }
+        .progress-bar { height: 100%; background: #005CB9; width: 0%; border-radius: 99px; transition: width 0.3s ease; }
+        .progress-info { font-size: 11px; color: #64748B; text-align: center; margin-top: 6px; font-weight: 500; }
+
+        /* Switch Toggle */
+        .switch-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .switch-title { font-size: 13px; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
+        .switch-desc { font-size: 11px; color: #64748B; line-height: 1.3; }
+        .toggle { position: relative; width: 44px; height: 24px; min-width: 44px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #CBD5E1; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #005CB9; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Tarjeta Oscura de Resultados */
+        .card-receipt { background: #0F172A; color: #FFFFFF; border-radius: 18px; padding: 20px; box-shadow: 0 10px 25px -5px rgba(15,23,42,0.4); margin-bottom: 14px; }
+        .receipt-caption { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94A3B8; font-weight: 700; }
+        .receipt-amount { font-size: 34px; font-weight: 900; color: #FEDB00; margin: 4px 0 14px; }
+        .receipt-row { display: flex; justify-content: space-between; font-size: 13px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; }
+        .receipt-row strong { color: #FFFFFF; font-weight: 700; }
+
+        /* Timeline Curva */
+        .timeline { display: flex; justify-content: space-between; margin: 12px 0 18px; position: relative; }
+        .timeline:before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: #E2E8F0; z-index: 1; transform: translateY(-50%); }
+        .step-btn { position: relative; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 2px solid #CBD5E1; background: #FFFFFF; color: #64748B; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .step-btn.active { border-color: #005CB9; background: #005CB9; color: #FFFFFF; box-shadow: 0 0 0 4px #DBEAFE; }
+
+        /* Supervisor Slider */
+        .slider-full { width: 100%; height: 6px; background: #E2E8F0; border-radius: 5px; outline: none; margin: 10px 0; accent-color: #005CB9; }
+        .alert-box { background: #FEF2F2; border: 1px solid #FECACA; padding: 12px; border-radius: 12px; margin-top: 12px; }
+
+        /* Botón Inferior Flotante */
+        .footer-fixed { position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 16px; background: linear-gradient(to top, rgba(241,245,249,1) 80%, rgba(241,245,249,0)); z-index: 50; }
+        .btn-save { width: 100%; max-width: 440px; margin: 0 auto; background: #FEDB00; border: none; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: 800; color: #0F172A; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(254,219,0,0.3); }
+        .btn-save:active { transform: scale(0.98); }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #0F172A; color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100; }
         
-        .toggle-checkbox:checked { right: 0; border-color: #005CB9; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #005CB9; }
-        
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col pb-24">
+<body>
 
-    <!-- Encabezado Limpio (Sin logo ni etiquetas superiores) -->
-    <header class="bg-brand-blue text-white shadow-lg sticky top-0 z-50 rounded-b-2xl">
-        <div class="max-w-md mx-auto px-5 py-4">
-            <div>
-                <h1 class="text-xl font-bold tracking-tight">Mis Incentivos</h1>
-                <p class="text-sm text-blue-200 font-medium">Crédito Auto</p>
+    <!-- Header con Menú Rápido -->
+    <header class="header">
+        <div class="wrapper">
+            <div class="header-top">
+                <div>
+                    <div class="header-title">Mis Incentivos</div>
+                    <div class="header-sub">Crédito Automotriz</div>
+                </div>
+                <div class="badge-year">2026</div>
             </div>
-            
-            <!-- Segmented Control de Puestos -->
-            <div class="mt-4 bg-blue-900/40 p-1 rounded-xl flex overflow-x-auto hide-scroll space-x-1">
-                <button onclick="switchTab('promotor-senior')" id="tab-promotor-senior" class="tab-btn flex-shrink-0 bg-white text-brand-blue font-bold text-xs py-2 px-4 rounded-lg shadow transition-all">
-                    Promotor (+5m)
-                </button>
-                <button onclick="switchTab('promotor-junior')" id="tab-promotor-junior" class="tab-btn flex-shrink-0 text-blue-100 font-medium text-xs py-2 px-4 rounded-lg hover:bg-blue-800/50 transition-all">
-                    Curva (0-5m)
-                </button>
-                <button onclick="switchTab('supervisor')" id="tab-supervisor" class="tab-btn flex-shrink-0 text-blue-100 font-medium text-xs py-2 px-4 rounded-lg hover:bg-blue-800/50 transition-all">
-                    Supervisor
-                </button>
-            </div>
+            <nav class="nav-tabs">
+                <button onclick="changeTab('tab-senior', this)" class="tab-btn active">Promotor (+5m)</button>
+                <button onclick="changeTab('tab-junior', this)" class="tab-btn">Curva (0-5m)</button>
+                <button onclick="changeTab('tab-sup', this)" class="tab-btn">Supervisor</button>
+            </nav>
         </div>
     </header>
 
-    <!-- Contenedor Principal -->
-    <main class="max-w-md mx-auto w-full px-4 pt-5 flex-1">
+    <div id="toast" class="toast">Guardado en el dispositivo</div>
 
-        <!-- TAB 1: PROMOTOR CONSOLIDADO (+5 MESES) -->
-        <section id="sec-promotor-senior" class="fade-in space-y-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                <div class="text-center mb-3">
-                    <h2 class="text-slate-500 font-semibold text-xs uppercase tracking-wide">Unidades Colocadas</h2>
-                </div>
-                
-                <div class="flex items-center justify-center space-x-4 mb-5">
-                    <button onclick="changeQty('senior-units', -1)" class="w-14 h-14 bg-slate-50 border border-slate-200 active:bg-slate-200 rounded-2xl font-black text-2xl text-slate-600 flex items-center justify-center transition-colors shadow-sm">-</button>
-                    <input type="number" id="senior-units" value="5" min="0" oninput="calcSenior()" class="w-24 h-16 text-center font-black text-4xl text-brand-blue border-none focus:ring-0 bg-transparent">
-                    <button onclick="changeQty('senior-units', 1)" class="w-14 h-14 bg-brand-blue active:bg-blue-800 rounded-2xl font-black text-2xl text-white flex items-center justify-center transition-colors shadow-md shadow-blue-500/30">+</button>
+    <main class="wrapper">
+
+        <!-- ========================================== -->
+        <!-- PESTAÑA 1: PROMOTOR CONSOLIDADO (+5 MESES) -->
+        <!-- ========================================== -->
+        <section id="tab-senior">
+            <div class="card">
+                <div class="card-title">Unidades Colocadas en el Mes</div>
+                <div class="counter-box">
+                    <button type="button" onclick="modifyUnits(-1)" class="btn-circle">-</button>
+                    <input type="number" id="senior-units" value="5" min="0" oninput="calculateSenior()" class="input-num">
+                    <button type="button" onclick="modifyUnits(1)" class="btn-circle primary">+</button>
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-xs font-semibold text-slate-500">Nivel actual: <strong id="senior-current-rate" class="text-brand-blue">$0 c/u</strong></span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-yellow-100 text-yellow-800" id="senior-next-tier-badge">Siguiente nivel</span>
+                <div class="progress-box">
+                    <div class="progress-header">
+                        <span>Nivel: <strong id="senior-rate-label" style="color: #005CB9;">$1,800 c/u</strong></span>
+                        <span id="senior-badge-next" class="tag-next">Siguiente nivel</span>
                     </div>
-                    <div class="w-full bg-slate-200 rounded-full h-2.5 mb-1 relative overflow-hidden">
-                        <div id="senior-progress-bar" class="bg-gradient-to-r from-blue-400 to-brand-blue h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 45%"></div>
+                    <div class="progress-track">
+                        <div id="senior-bar" class="progress-bar"></div>
                     </div>
-                    <p id="senior-progress-text" class="text-xs text-slate-500 text-center mt-2 font-medium">Faltan 2 unidades para subir a $2,600.00 c/u</p>
+                    <div id="senior-progress-desc" class="progress-info">Faltan 2 unidades para subir de nivel</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                <div class="flex items-center justify-between">
+            <div class="card">
+                <div class="switch-row">
                     <div>
-                        <h3 class="font-bold text-slate-800 text-sm">Bono Promotor Coach</h3>
-                        <p class="text-[11px] text-slate-500 mt-0.5 leading-snug pr-3">Gana $4,000 extra si tu asesorado completa 4 meses y ambos colocan mín. 5 unidades.</p>
+                        <div class="switch-title">Bono Promotor Coach (+$4,000)</div>
+                        <div class="switch-desc">Asesorado completó 4 meses y ambos colocan mín. 5 créditos.</div>
                     </div>
-                    <div class="relative inline-block w-12 mr-1 align-middle select-none">
-                        <input type="checkbox" id="senior-coach" onchange="calcSenior()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 z-10 top-0 left-0"/>
-                        <label for="senior-coach" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-slate-800 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600 rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Pago Estimado</p>
-                <div class="text-4xl font-black text-brand-yellow tracking-tight" id="senior-total">$0.00</div>
-                
-                <div class="mt-5 space-y-2 text-sm border-t border-slate-700 pt-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-300">Comisión x Unidades</span>
-                        <strong id="senior-subtotal-units" class="text-white font-semibold">$0.00</strong>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-300">Bono Coach</span>
-                        <strong id="senior-coach-val" class="text-white font-semibold">$0.00</strong>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 2: PROMOTOR CURVA (0 A 5 MESES) -->
-        <section id="sec-promotor-junior" class="hidden fade-in space-y-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                <h2 class="font-bold text-slate-800 text-sm mb-3">Línea de Tiempo (Curva de Aprendizaje)</h2>
-                
-                <div class="flex justify-between items-center mb-6 relative">
-                    <div class="absolute left-0 top-1/2 w-full h-1 bg-slate-100 -z-10 transform -translate-y-1/2 rounded-full"></div>
-                    <div id="junior-timeline" class="flex justify-between w-full"></div>
-                </div>
-
-                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4 text-center">
-                    <h3 id="junior-phase-title" class="font-bold text-brand-blue text-sm">Mes 0: Onboarding</h3>
-                    <p id="junior-phase-desc" class="text-[11px] text-blue-800 mt-1 font-medium">Cumple tus capacitaciones y normativas.</p>
-                </div>
-
-                <div id="junior-m0-box" class="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
-                    <span class="text-xs font-bold text-amber-900">¿Acreditaste Cursos e Itinerario? ($1,500)</span>
-                    <div class="relative inline-block w-12 align-middle select-none">
-                        <input type="checkbox" id="junior-m0-cert" checked onchange="calcJunior()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 z-10"/>
-                        <label for="junior-m0-cert" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
-                    </div>
-                </div>
-
-                <div id="junior-ops-box" class="space-y-4 hidden">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="block text-sm font-bold text-slate-800">Unidades Colocadas</span>
-                            <span class="text-[11px] text-slate-500 font-medium">$1,500 pago directo por cada una</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <button onclick="changeQty('junior-sales', -1)" class="w-10 h-10 bg-slate-100 rounded-xl font-bold text-lg text-slate-600">-</button>
-                            <input type="number" id="junior-sales" value="2" min="0" oninput="calcJunior()" class="w-12 text-center font-bold text-lg text-brand-blue bg-transparent">
-                            <button onclick="changeQty('junior-sales', 1)" class="w-10 h-10 bg-brand-blue text-white rounded-xl font-bold text-lg">+</button>
-                        </div>
-                    </div>
-
-                    <div id="junior-reqs-wrapper" class="flex justify-between items-center pt-4 border-t border-slate-100">
-                        <div>
-                            <span class="block text-sm font-bold text-slate-800">Solicitudes Completas</span>
-                            <span id="junior-reqs-help" class="text-[11px] text-slate-500 font-medium">Pago extra dependiendo el mes</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <button onclick="changeQty('junior-requests', -1)" class="w-10 h-10 bg-slate-100 rounded-xl font-bold text-lg text-slate-600">-</button>
-                            <input type="number" id="junior-requests" value="3" min="0" oninput="calcJunior()" class="w-12 text-center font-bold text-lg text-brand-blue bg-transparent">
-                            <button onclick="changeQty('junior-requests', 1)" class="w-10 h-10 bg-slate-800 text-white rounded-xl font-bold text-lg">+</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-slate-800 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Total a Percibir</p>
-                <div class="text-4xl font-black text-brand-yellow tracking-tight" id="junior-total">$1,500.00</div>
-                
-                <div class="mt-5 space-y-2 text-sm border-t border-slate-700 pt-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-300">Por Colocaciones</span>
-                        <strong id="junior-sales-val" class="text-white font-semibold">$0.00</strong>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-300">Por Solicitudes / Cursos</span>
-                        <strong id="junior-extra-val" class="text-white font-semibold">$1,500.00</strong>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 3: SUPERVISOR DE CRÉDITO -->
-        <section id="sec-supervisor" class="hidden fade-in space-y-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-2 text-sm">
-                <div class="flex bg-slate-100 rounded-xl p-1">
-                    <button id="btn-sup-cons" onclick="setSupMode('consolidado')" class="flex-1 py-2 rounded-lg bg-white shadow font-bold text-brand-blue text-xs transition-all">Consolidado (>3m)</button>
-                    <button id="btn-sup-adapt" onclick="setSupMode('adaptacion')" class="flex-1 py-2 rounded-lg text-slate-500 font-medium text-xs transition-all">Adaptación (0-3m)</button>
-                </div>
-            </div>
-
-            <div id="sup-cons-box" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 space-y-5">
-                <div>
-                    <div class="flex justify-between items-end mb-2">
-                        <label class="block text-sm font-bold text-slate-800">% Equipo Comisionando</label>
-                        <span id="sup-team-pct-txt" class="text-lg font-black text-green-600">80%</span>
-                    </div>
-                    <input type="range" id="sup-team-pct" min="0" max="100" value="80" oninput="updateSupSlider(this.value); calcSupervisor()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
-                    <p class="text-[10px] text-slate-400 mt-1 flex justify-between">
-                        <span>Peligro (Rotación)</span><span>Meta Óptima ≥80%</span>
-                    </p>
-                </div>
-
-                <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl">
-                    <span class="block text-sm font-bold text-slate-800">Unidades Totales del Equipo</span>
-                    <input type="number" id="sup-team-units" value="35" oninput="calcSupervisor()" class="w-20 p-2 text-center bg-white border border-slate-200 rounded-lg font-bold text-lg text-brand-blue">
-                </div>
-
-                <div class="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between">
-                    <div>
-                        <span class="text-sm font-bold text-red-900 block">100% Expedientes Entregados</span>
-                        <span class="text-[11px] text-red-700">Sin esto, se retiene la comisión.</span>
-                    </div>
-                    <div class="relative inline-block w-12 align-middle select-none">
-                        <input type="checkbox" id="sup-candado" checked onchange="calcSupervisor()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10"/>
-                        <label for="sup-candado" class="toggle-label block overflow-hidden h-6 rounded-full bg-red-300 cursor-pointer"></label>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sup-adapt-box" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-5 space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Sueldo Base Mensual</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-bold">$</span>
-                        <input type="number" id="sup-base-salary" value="18000" oninput="calcSupervisor()" class="w-full pl-8 p-3 bg-slate-50 border border-slate-200 rounded-xl font-black text-lg text-slate-800">
-                    </div>
-                </div>
-                <div class="space-y-3 pt-2">
-                    <label class="flex items-center justify-between p-3 border border-slate-100 rounded-xl bg-slate-50">
-                        <span class="text-xs font-bold text-slate-700">Cumple itinerario estricto</span>
-                        <input type="checkbox" id="sup-chk-itinerary" checked onchange="calcSupervisor()" class="w-5 h-5 accent-blue-600">
-                    </label>
-                    <label class="flex items-center justify-between p-3 border border-slate-100 rounded-xl bg-slate-50">
-                        <span class="text-xs font-bold text-slate-700">Acreditó capacitaciones</span>
-                        <input type="checkbox" id="sup-chk-training" checked onchange="calcSupervisor()" class="w-5 h-5 accent-blue-600">
+                    <label class="toggle">
+                        <input type="checkbox" id="senior-coach" onchange="calculateSenior()">
+                        <span class="slider"></span>
                     </label>
                 </div>
             </div>
 
-            <div class="bg-slate-800 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden text-center">
-                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Incentivo Supervisor</p>
-                <div class="text-4xl font-black text-brand-yellow tracking-tight" id="sup-total">$22,754.00</div>
-                <div class="mt-3 bg-slate-700/50 rounded-lg p-2 inline-block">
-                    <p id="sup-note" class="text-[11px] text-blue-200 font-medium">Cumple meta de retención y acompañamiento.</p>
+            <div class="card-receipt">
+                <div class="receipt-caption">Pago Estimado</div>
+                <div class="receipt-amount" id="senior-total-display">$9,000.00</div>
+                <div class="receipt-row">
+                    <span>Comisión Unidades:</span>
+                    <strong id="senior-subtotal-display">$9,000.00</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Bono Coach:</span>
+                    <strong id="senior-coach-display">$0.00</strong>
                 </div>
             </div>
         </section>
 
-    </main>
+        <!-- ========================================== -->
+        <!-- PESTAÑA 2: CURVA DE APRENDIZAJE (0 A 5 M)  -->
+        <!-- ========================================== -->
+        <section id="tab-junior" class="hidden">
+            <div class="card">
+                <div class="card-title">Mes de Antigüedad</div>
+                <div class="timeline">
+                    <button type="button" onclick="setJuniorMonth(0)" class="step-btn active">0</button>
+                    <button type="button" onclick="setJuniorMonth(1)" class="step-btn">1</button>
+                    <button type="button" onclick="setJuniorMonth(2)" class="step-btn">2</button>
+                    <button type="button" onclick="setJuniorMonth(3)" class="step-btn">3</button>
+                    <button type="button" onclick="setJuniorMonth(4)" class="step-btn">4</button>
+                    <button type="button" onclick="setJuniorMonth(5)" class="step-btn">5</button>
+                </div>
 
-    <!-- Botón Flotante Guardar -->
-    <div class="fixed bottom-5 w-full max-w-md left-1/2 transform -translate-x-1/2 px-4 z-50">
-        <button onclick="saveSimulation()" class="w-full py-4 bg-brand-yellow hover:bg-yellow-400 active:scale-95 transition-transform text-blue-950 font-black text-sm rounded-2xl shadow-[0_10px_25px_-5px_rgba(254,219,0,0.4)] flex items-center justify-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-            <span>Guardar Mi Cálculo</span>
-        </button>
-        <div id="save-feedback" class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-4 py-1.5 rounded-lg opacity-0 transition-opacity pointer-events-none whitespace-nowrap">
-            ¡Guardado en el dispositivo!
-        </div>
-    </div>
+                <div id="junior-phase-card" style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px; padding:10px; text-align:center; margin-bottom:12px;">
+                    <strong id="junior-phase-title" style="color:#005CB9; font-size:13px; display:block;">Mes 0: Onboarding</strong>
+                    <span id="junior-phase-info" style="font-size:11px; color:#1E40AF;">Cumple cursos normativos e itinerario.</span>
+                </div>
 
-    <script>
-        const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
-
-        function switchTab(tabId) {
-            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn flex-shrink-0 text-blue-100 font-medium text-xs py-2 px-4 rounded-lg hover:bg-blue-800/50 transition-all";
-            });
-            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.className = "tab-btn flex-shrink-0 bg-white text-brand-blue font-bold text-xs py-2 px-4 rounded-lg shadow transition-all";
-        }
-
-        function changeQty(inputId, delta) {
-            const el = document.getElementById(inputId);
-            let val = parseInt(el.value || 0) + delta;
-            if (val < 0) val = 0;
-            el.value = val;
-            el.dispatchEvent(new Event('input'));
-        }
-
-        const tiers = [
-            { max: 3, rate: 0, label: "$0 (Piso no alcanzado)" },
-            { max: 4, rate: 1500, label: "$1,500 c/u" },
-            { max: 6, rate: 1800, label: "$1,800 c/u" },
-            { max: 8, rate: 2600, label: "$2,600 c/u" },
-            { max: 12, rate: 3000, label: "$3,000 c/u" },
-            { max: 18, rate: 3300, label: "$3,300 c/u" },
-            { max: 999, rate: 3600, label: "$3,600 c/u (Tope Máx)" }
-        ];
-
-        function calcSenior() {
-            const units = parseInt(document.getElementById('senior-units').value || 0);
-            const isCoach = document.getElementById('senior-coach').checked;
-            
-            let currentTierIndex = tiers.findIndex(t => units <= t.max);
-            if(currentTierIndex === -1) currentTierIndex = tiers.length - 1;
-            
-            const currentTier = tiers[currentTierIndex];
-            const nextTier = currentTierIndex < tiers.length - 1 ? tiers[currentTierIndex + 1] : null;
-
-            const unitsTotal = units * currentTier.rate;
-            const coachBonus = (isCoach && units >= 5) ? 4000 : 0;
-            const total = unitsTotal + coachBonus;
-
-            document.getElementById('senior-current-rate').innerText = currentTier.label;
-            document.getElementById('senior-subtotal-units').innerText = formatMoney(unitsTotal);
-            
-            const coachLabel = document.getElementById('senior-coach-val');
-            if(isCoach && units < 5) {
-                coachLabel.innerText = "¡Faltan ventas!";
-                coachLabel.classList.replace('text-white', 'text-red-400');
-            } else {
-                coachLabel.innerText = formatMoney(coachBonus);
-                coachLabel.classList.replace('text-red-400', 'text-white');
-            }
-            
-            document.getElementById('senior-total').innerText = formatMoney(total);
-
-            const progressBar = document.getElementById('senior-progress-bar');
-            const progressText = document.getElementById('senior-progress-text');
-            const nextBadge = document.getElementById('senior-next-tier-badge');
-
-            if (nextTier) {
-                const prevMax = currentTierIndex === 0 ? 0 : tiers[currentTierIndex - 1].max;
-                const range = currentTier.max - prevMax;
-                const progress = units - prevMax;
-                const percent = Math.max(5, (progress / range) * 100); 
-                
-                progressBar.style.width = `${percent}%`;
-                progressBar.className = "bg-gradient-to-r from-blue-400 to-brand-blue h-2.5 rounded-full transition-all duration-500 ease-out";
-                
-                const diff = currentTier.max - units + 1;
-                progressText.innerHTML = `Falta <strong>${diff} unidad${diff>1?'es':''}</strong> para subir a ${formatMoney(nextTier.rate)} c/u`;
-                nextBadge.style.display = 'block';
-            } else {
-                progressBar.style.width = "100%";
-                progressBar.className = "bg-gradient-to-r from-yellow-400 to-yellow-600 h-2.5 rounded-full transition-all duration-500 ease-out";
-                progressText.innerHTML = "<strong>¡Felicidades!</strong> Has alcanzado el pago máximo por crédito.";
-                nextBadge.style.display = 'none';
-            }
-        }
-
-        let currentJuniorMonth = 0;
-
-        function renderJuniorTimeline() {
-            const container = document.getElementById('junior-timeline');
-            container.innerHTML = '';
-            for(let i=0; i<=5; i++) {
-                const isActive = i === currentJuniorMonth;
-                const isPast = i < currentJuniorMonth;
-                let bg = isActive ? 'bg-brand-blue border-brand-blue text-white ring-4 ring-blue-100' : 
-                         isPast ? 'bg-blue-200 border-blue-200 text-blue-800' : 'bg-white border-slate-300 text-slate-400';
-                
-                container.innerHTML += `
-                    <button onclick="setJuniorMonth(${i})" class="relative z-10 w-10 h-10 rounded-full border-2 font-bold text-sm transition-all duration-300 ${bg} flex items-center justify-center hover:scale-110">
-                        ${i}
-                    </button>
-                `;
-            }
-        }
-
-        function setJuniorMonth(m) {
-            currentJuniorMonth = m;
-            renderJuniorTimeline();
-
-            const title = document.getElementById('junior-phase-title');
-            const desc = document.getElementById('junior-phase-desc');
-            const m0Box = document.getElementById('junior-m0-box');
-            const opsBox = document.getElementById('junior-ops-box');
-            const reqsWrapper = document.getElementById('junior-reqs-wrapper');
-            const reqsHelp = document.getElementById('junior-reqs-help');
-
-            if (m === 0) {
-                title.innerText = "Mes 0: Onboarding y Acreditación";
-                desc.innerText = "Remunera capacitación para acelerar tu curva.";
-                m0Box.classList.remove('hidden');
-                opsBox.classList.add('hidden');
-            } else {
-                m0Box.classList.add('hidden');
-                opsBox.classList.remove('hidden');
-
-                if (m === 1) {
-                    title.innerText = "Mes 1: Introducción";
-                    desc.innerText = "Ganas por cada venta + bonos por juntar 3 solicitudes.";
-                    reqsWrapper.classList.remove('hidden');
-                    reqsWrapper.classList.add('flex');
-                    reqsHelp.innerText = "Paga $1,500 cada 3 solicitudes.";
-                } else if (m === 2) {
-                    title.innerText = "Mes 2: Ejecución";
-                    desc.innerText = "Ganas por cada venta + bonos por juntar 7 solicitudes.";
-                    reqsWrapper.classList.remove('hidden');
-                    reqsWrapper.classList.add('flex');
-                    reqsHelp.innerText = "Paga $1,500 cada 7 solicitudes.";
-                } else if (m === 3) {
-                    title.innerText = "Mes 3: Ejecución Avanzada";
-                    desc.innerText = "Ganas por cada venta + bonos por juntar 10 solicitudes.";
-                    reqsWrapper.classList.remove('hidden');
-                    reqsWrapper.classList.add('flex');
-                    reqsHelp.innerText = "Paga $1,500 cada 10 solicitudes.";
-                } else {
-                    title.innerText = `Mes ${m}: Afianzamiento`;
-                    desc.innerText = "Paga $1,500 directo desde tu primera colocación.";
-                    reqsWrapper.classList.add('hidden');
-                    reqsWrapper.classList.remove('flex');
-                }
-            }
-            calcJunior();
-        }
-
-        function calcJunior() {
-            let total = 0, salesVal = 0, extraVal = 0;
-
-            if (currentJuniorMonth === 0) {
-                const cert = document.getElementById('junior-m0-cert').checked;
-                extraVal = cert ? 1500 : 0;
-            } else {
-                const sales = parseInt(document.getElementById('junior-sales').value || 0);
-                salesVal = sales * 1500;
-                
-                const reqs = parseInt(document.getElementById('junior-requests').value || 0);
-                if (currentJuniorMonth === 1) extraVal = Math.floor(reqs / 3) * 1500;
-                else if (currentJuniorMonth === 2) extraVal = Math.floor(reqs / 7) * 1500;
-                else if (currentJuniorMonth === 3) extraVal = Math.floor(reqs / 10) * 1500;
-            }
-            
-            total = salesVal + extraVal;
-            document.getElementById('junior-sales-val').innerText = formatMoney(salesVal);
-            document.getElementById('junior-extra-val').innerText = formatMoney(extraVal);
-            document.getElementById('junior-total').innerText = formatMoney(total);
-        }
-
-        let supMode = 'consolidado';
-
-        function setSupMode(mode) {
-            supMode = mode;
-            const btnCons = document.getElementById('btn-sup-cons');
-            const btnAdapt = document.getElementById('btn-sup-adapt');
-            
-            if(mode === 'consolidado') {
-                btnCons.className = "flex-1 py-2 rounded-lg bg-white shadow font-bold text-brand-blue text-xs transition-all";
-                btnAdapt.className = "flex-1 py-2 rounded-lg text-slate-500 font-medium text-xs transition-all";
-                document.getElementById('sup-cons-box').classList.remove('hidden');
-                document.getElementById('sup-adapt-box').classList.add('hidden');
-            } else {
-                btnAdapt.className = "flex-1 py-2 rounded-lg bg-white shadow font-bold text-brand-blue text-xs transition-all";
-                btnCons.className = "flex-1 py-2 rounded-lg text-slate-500 font-medium text-xs transition-all";
-                document.getElementById('sup-cons-box').classList.add('hidden');
-                document.getElementById('sup-adapt-box').classList.remove('hidden');
-            }
-            calcSupervisor();
-        }
-
-        function updateSupSlider(val) {
-            const txt = document.getElementById('sup-team-pct-txt');
-            txt.innerText = val + '%';
-            if (val >= 8
+                <div id="junior-box-m0">
+                    <div class="switch-row" style="background:
