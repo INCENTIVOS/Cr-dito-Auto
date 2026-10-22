@@ -32,17 +32,12 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col pb-24">
 
-    <!-- Encabezado -->
+    <!-- Encabezado Limpio (Sin logo ni etiquetas superiores) -->
     <header class="bg-brand-blue text-white shadow-lg sticky top-0 z-50 rounded-b-2xl">
         <div class="max-w-md mx-auto px-5 py-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight">Mis Incentivos</h1>
-                    <p class="text-sm text-blue-200 font-medium">Crédito Auto 2026</p>
-                </div>
-                <div class="bg-blue-800/80 text-yellow-300 font-bold px-3 py-1 rounded-lg text-xs tracking-wider border border-blue-400/30">
-                    2026
-                </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">Mis Incentivos</h1>
+                <p class="text-sm text-blue-200 font-medium">Crédito Auto</p>
             </div>
             
             <!-- Segmented Control de Puestos -->
@@ -287,7 +282,6 @@
             el.dispatchEvent(new Event('input'));
         }
 
-        // Promotor Consolidado (+5 meses)
         const tiers = [
             { max: 3, rate: 0, label: "$0 (Piso no alcanzado)" },
             { max: 4, rate: 1500, label: "$1,500 c/u" },
@@ -350,7 +344,6 @@
             }
         }
 
-        // Promotor Curva (0 a 5 meses)
         let currentJuniorMonth = 0;
 
         function renderJuniorTimeline() {
@@ -440,7 +433,6 @@
             document.getElementById('junior-total').innerText = formatMoney(total);
         }
 
-        // Supervisor
         let supMode = 'consolidado';
 
         function setSupMode(mode) {
@@ -465,67 +457,4 @@
         function updateSupSlider(val) {
             const txt = document.getElementById('sup-team-pct-txt');
             txt.innerText = val + '%';
-            if (val >= 80) txt.className = "text-lg font-black text-green-600";
-            else if (val >= 50) txt.className = "text-lg font-black text-yellow-500";
-            else txt.className = "text-lg font-black text-red-500";
-        }
-
-        function calcSupervisor() {
-            let total = 0;
-            const note = document.getElementById('sup-note');
-
-            if (supMode === 'adaptacion') {
-                const base = parseFloat(document.getElementById('sup-base-salary').value || 0);
-                const itin = document.getElementById('sup-chk-itinerary').checked;
-                const train = document.getElementById('sup-chk-training').checked;
-
-                if (itin && train) {
-                    total = base * 0.50; 
-                    note.innerText = "Logrado: Bono garantizado del 50%.";
-                    note.className = "text-[11px] text-green-300 font-medium";
-                } else {
-                    total = 0;
-                    note.innerText = "Alerta: Debes cumplir itinerario y cursos.";
-                    note.className = "text-[11px] text-red-300 font-medium";
-                }
-            } else {
-                const candado100 = document.getElementById('sup-candado').checked;
-                if (!candado100) {
-                    total = 0;
-                    note.innerText = "Retenido 100% por falta de expedientes.";
-                    note.className = "text-[11px] text-red-300 font-medium";
-                } else {
-                    const teamPct = parseInt(document.getElementById('sup-team-pct').value || 0);
-                    const units = parseInt(document.getElementById('sup-team-units').value || 0);
-                    
-                    const factor = teamPct >= 80 ? 1.0 : (teamPct / 80);
-                    total = (units * 450 + 7000) * factor;
-                    
-                    if (teamPct >= 80) {
-                        note.innerText = "¡Excelente! Equipo maduro y productivo.";
-                        note.className = "text-[11px] text-green-300 font-medium";
-                    } else {
-                        note.innerText = "Cuidado: Alta rotación. Penalización aplicada.";
-                        note.className = "text-[11px] text-yellow-300 font-medium";
-                    }
-                }
-            }
-
-            document.getElementById('sup-total').innerText = formatMoney(total);
-        }
-
-        function saveSimulation() {
-            const feedback = document.getElementById('save-feedback');
-            feedback.style.opacity = '1';
-            setTimeout(() => { feedback.style.opacity = '0'; }, 2000);
-        }
-
-        window.onload = function() {
-            calcSenior();
-            renderJuniorTimeline();
-            calcJunior();
-            calcSupervisor();
-        };
-    </script>
-</body>
-</html>
+            if (val >= 8
