@@ -175,4 +175,378 @@
                 </div>
 
                 <div id="junior-box-m0">
-                    <div class="switch-row" style="background:
+                    <div class="switch-row" style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px; border-radius: 10px;">
+                        <div>
+                            <div class="switch-title" style="color: #92400E;">Capacitaciones y Cursos ($1,500)</div>
+                            <div class="switch-desc">Acreditación completa de inducción.</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="junior-m0-check" checked onchange="calculateJunior()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="junior-box-ops" class="hidden">
+                    <div class="switch-row" style="margin-bottom: 14px;">
+                        <div>
+                            <div class="switch-title">Unidades Colocadas</div>
+                            <div class="switch-desc">$1,500 de pago directo c/u.</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button type="button" onclick="modJunior('junior-sales', -1)" class="btn-circle" style="width:36px; height:36px; font-size:18px;">-</button>
+                            <input type="number" id="junior-sales" value="2" min="0" oninput="calculateJunior()" style="width:40px; text-align:center; font-weight:800; border:none; background:transparent; font-size:18px; color:#005CB9;">
+                            <button type="button" onclick="modJunior('junior-sales', 1)" class="btn-circle primary" style="width:36px; height:36px; font-size:18px;">+</button>
+                        </div>
+                    </div>
+
+                    <div id="junior-reqs-row" class="switch-row" style="border-top:1px solid #E2E8F0; padding-top:12px;">
+                        <div>
+                            <div class="switch-title">Solicitudes Completas</div>
+                            <div class="switch-desc" id="junior-reqs-legend">Bonificación por expedientes.</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button type="button" onclick="modJunior('junior-reqs', -1)" class="btn-circle" style="width:36px; height:36px; font-size:18px;">-</button>
+                            <input type="number" id="junior-reqs" value="3" min="0" oninput="calculateJunior()" style="width:40px; text-align:center; font-weight:800; border:none; background:transparent; font-size:18px; color:#005CB9;">
+                            <button type="button" onclick="modJunior('junior-reqs', 1)" class="btn-circle" style="width:36px; height:36px; font-size:18px; background:#0F172A; color:#FFF; border:none;">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-receipt">
+                <div class="receipt-caption">Total Percibido (Curva)</div>
+                <div class="receipt-amount" id="junior-total-display">$1,500.00</div>
+                <div class="receipt-row">
+                    <span>Por Colocaciones:</span>
+                    <strong id="junior-sub-sales">$0.00</strong>
+                </div>
+                <div class="receipt-row">
+                    <span>Por Cursos / Solicitudes:</span>
+                    <strong id="junior-sub-extra">$1,500.00</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PESTAÑA 3: SUPERVISOR                      -->
+        <!-- ========================================== -->
+        <section id="tab-sup" class="hidden">
+            <div class="card">
+                <div style="display:flex; background:#F1F5F9; border-radius:10px; padding:3px; gap:4px; margin-bottom:14px;">
+                    <button type="button" id="btn-mode-cons" onclick="setSupMode('cons')" class="tab-btn active" style="color:#005CB9;">Consolidado (>3m)</button>
+                    <button type="button" id="btn-mode-adap" onclick="setSupMode('adap')" class="tab-btn" style="color:#64748B;">Adaptación (0-3m)</button>
+                </div>
+
+                <div id="sup-view-cons">
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-size:13px; font-weight:700;">% Promotores Comisionando</span>
+                            <strong id="sup-pct-label" style="font-size:16px; color:#16A34A;">80%</strong>
+                        </div>
+                        <input type="range" id="sup-pct-range" min="0" max="100" value="80" oninput="updateSupSlider(this.value); calculateSupervisor()" class="slider-full">
+                        <div style="display:flex; justify-content:space-between; font-size:10px; color:#94A3B8;">
+                            <span>0%</span><span>Meta: ≥ 80%</span><span>100%</span>
+                        </div>
+                    </div>
+
+                    <div class="switch-row" style="background:#F8FAFC; padding:10px; border-radius:10px; margin-bottom:12px;">
+                        <span style="font-size:13px; font-weight:700;">Colocaciones del Equipo</span>
+                        <input type="number" id="sup-units" value="35" oninput="calculateSupervisor()" style="width:60px; padding:6px; font-weight:800; text-align:center; border:1px solid #CBD5E1; border-radius:8px; background:#FFF; font-size:16px;">
+                    </div>
+
+                    <div class="alert-box">
+                        <div class="switch-row">
+                            <div>
+                                <div class="switch-title" style="color:#991B1B;">100% Expedientes Completos</div>
+                                <div class="switch-desc" style="color:#B91C1C;">Si falta 1 expediente, se retiene comisión.</div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="sup-check-candado" checked onchange="calculateSupervisor()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sup-view-adap" class="hidden">
+                    <div style="margin-bottom:12px;">
+                        <span style="font-size:12px; font-weight:600; color:#64748B;">Sueldo Base Mensual</span>
+                        <input type="number" id="sup-salary" value="18000" oninput="calculateSupervisor()" style="width:100%; padding:10px; border-radius:10px; border:1px solid #CBD5E1; font-weight:800; font-size:16px; margin-top:4px;">
+                    </div>
+                    <div class="switch-row" style="padding:8px 0; border-bottom:1px solid #F1F5F9;">
+                        <span style="font-size:12px; font-weight:600;">Cumplimiento de itinerario</span>
+                        <input type="checkbox" id="sup-chk-1" checked onchange="calculateSupervisor()" style="width:20px; height:20px;">
+                    </div>
+                    <div class="switch-row" style="padding:8px 0;">
+                        <span style="font-size:12px; font-weight:600;">Capacitaciones acreditadas</span>
+                        <input type="checkbox" id="sup-chk-2" checked onchange="calculateSupervisor()" style="width:20px; height:20px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-receipt">
+                <div class="receipt-caption">Incentivo Supervisor</div>
+                <div class="receipt-amount" id="sup-total-display">$22,754.00</div>
+                <div id="sup-note-display" style="font-size:11px; color:#93C5FD; font-weight:500;">Cumple meta de retención (≥ 80% de equipo comisionando).</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Botón Flotante Seguro -->
+    <div class="footer-fixed">
+        <button type="button" onclick="showSavedToast()" class="btn-save">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            <span>Guardar Mi Cálculo</span>
+        </button>
+    </div>
+
+    <!-- LÓGICA JAVASCRIPT LIGERA -->
+    <script>
+        const currencyFmt = (n) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n);
+
+        // Control de Tabs
+        function changeTab(tabId, btn) {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            btn.classList.add('active');
+        }
+
+        // Modificador de número universal
+        function modifyUnits(delta) {
+            const input = document.getElementById('senior-units');
+            let val = (parseInt(input.value) || 0) + delta;
+            if (val < 0) val = 0;
+            input.value = val;
+            calculateSenior();
+        }
+
+        // ==========================================
+        // CÁLCULO PROMOTOR (+5 MESES)
+        // ==========================================
+        const seniorScale = [
+            { max: 3, rate: 0, text: "$0 (Mínimo 4 colocaciones)" },
+            { max: 4, rate: 1500, text: "$1,500 c/u (4 créditos)" },
+            { max: 6, rate: 1800, text: "$1,800 c/u (5 a 6 créditos)" },
+            { max: 8, rate: 2600, text: "$2,600 c/u (7 a 8 créditos)" },
+            { max: 12, rate: 3000, text: "$3,000 c/u (9 a 12 créditos)" },
+            { max: 18, rate: 3300, text: "$3,300 c/u (13 a 18 créditos)" },
+            { max: 9999, rate: 3600, text: "$3,600 c/u (19 o más)" }
+        ];
+
+        function calculateSenior() {
+            const units = parseInt(document.getElementById('senior-units').value) || 0;
+            const isCoach = document.getElementById('senior-coach').checked;
+
+            let idx = seniorScale.findIndex(s => units <= s.max);
+            if (idx === -1) idx = seniorScale.length - 1;
+            
+            const current = seniorScale[idx];
+            const next = idx < seniorScale.length - 1 ? seniorScale[idx + 1] : null;
+
+            const subtotal = units * current.rate;
+            let coach = 0;
+            const coachDisplay = document.getElementById('senior-coach-display');
+
+            if (isCoach) {
+                if (units >= 5) {
+                    coach = 4000;
+                    coachDisplay.innerText = currencyFmt(coach);
+                    coachDisplay.style.color = "#FFFFFF";
+                } else {
+                    coach = 0;
+                    coachDisplay.innerText = "Mín. 5 ventas para cobrar";
+                    coachDisplay.style.color = "#F87171";
+                }
+            } else {
+                coachDisplay.innerText = "$0.00";
+                coachDisplay.style.color = "#FFFFFF";
+            }
+
+            document.getElementById('senior-rate-label').innerText = current.text;
+            document.getElementById('senior-subtotal-display').innerText = currencyFmt(subtotal);
+            document.getElementById('senior-total-display').innerText = currencyFmt(subtotal + coach);
+
+            // Barra de progreso
+            const bar = document.getElementById('senior-bar');
+            const desc = document.getElementById('senior-progress-desc');
+            const badge = document.getElementById('senior-badge-next');
+
+            if (next) {
+                const prev = idx === 0 ? 0 : seniorScale[idx - 1].max;
+                const pct = Math.max(8, ((units - prev) / (current.max - prev)) * 100);
+                bar.style.width = Math.min(100, pct) + "%";
+                bar.style.background = "#005CB9";
+                const needed = current.max - units + 1;
+                desc.innerHTML = `Falta <strong>${needed} crédito${needed>1?'s':''}</strong> para cobrar a ${currencyFmt(next.rate)} c/u`;
+                badge.style.display = "block";
+            } else {
+                bar.style.width = "100%";
+                bar.style.background = "#16A34A";
+                desc.innerHTML = "<strong>¡Nivel máximo alcanzado!</strong> ($3,600 c/u)";
+                badge.style.display = "none";
+            }
+        }
+
+        // ==========================================
+        // CÁLCULO CURVA (0 A 5 MESES)
+        // ==========================================
+        let currentJuniorMonth = 0;
+
+        function setJuniorMonth(m) {
+            currentJuniorMonth = m;
+            document.querySelectorAll('.timeline .step-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === m);
+            });
+
+            const pTitle = document.getElementById('junior-phase-title');
+            const pInfo = document.getElementById('junior-phase-info');
+            const boxM0 = document.getElementById('junior-box-m0');
+            const boxOps = document.getElementById('junior-box-ops');
+            const reqsRow = document.getElementById('junior-reqs-row');
+            const reqsLegend = document.getElementById('junior-reqs-legend');
+
+            if (m === 0) {
+                pTitle.innerText = "Mes 0: Onboarding";
+                pInfo.innerText = "Cumple cursos normativos e itinerario.";
+                boxM0.classList.remove('hidden');
+                boxOps.classList.add('hidden');
+            } else {
+                boxM0.classList.add('hidden');
+                boxOps.classList.remove('hidden');
+
+                if (m === 1) {
+                    pTitle.innerText = "Mes 1: Introducción";
+                    pInfo.innerText = "Venta directa + incentivo cada 3 solicitudes.";
+                    reqsRow.classList.remove('hidden');
+                    reqsLegend.innerText = "$1,500 extra cada 3 solicitudes.";
+                } else if (m === 2) {
+                    pTitle.innerText = "Mes 2: Ejecución";
+                    pInfo.innerText = "Venta directa + incentivo cada 7 solicitudes.";
+                    reqsRow.classList.remove('hidden');
+                    reqsLegend.innerText = "$1,500 extra cada 7 solicitudes.";
+                } else if (m === 3) {
+                    pTitle.innerText = "Mes 3: Ejecución";
+                    pInfo.innerText = "Venta directa + incentivo cada 10 solicitudes.";
+                    reqsRow.classList.remove('hidden');
+                    reqsLegend.innerText = "$1,500 extra cada 10 solicitudes.";
+                } else {
+                    pTitle.innerText = `Mes ${m}: Afianzamiento`;
+                    pInfo.innerText = "$1,500 directo desde tu primera colocación.";
+                    reqsRow.classList.add('hidden');
+                }
+            }
+            calculateJunior();
+        }
+
+        function modJunior(id, d) {
+            const el = document.getElementById(id);
+            let val = (parseInt(el.value) || 0) + d;
+            if (val < 0) val = 0;
+            el.value = val;
+            calculateJunior();
+        }
+
+        function calculateJunior() {
+            let salesTotal = 0;
+            let extraTotal = 0;
+
+            if (currentJuniorMonth === 0) {
+                extraTotal = document.getElementById('junior-m0-check').checked ? 1500 : 0;
+            } else {
+                const sales = parseInt(document.getElementById('junior-sales').value) || 0;
+                salesTotal = sales * 1500;
+
+                const reqs = parseInt(document.getElementById('junior-reqs').value) || 0;
+                if (currentJuniorMonth === 1) extraTotal = Math.floor(reqs / 3) * 1500;
+                else if (currentJuniorMonth === 2) extraTotal = Math.floor(reqs / 7) * 1500;
+                else if (currentJuniorMonth === 3) extraTotal = Math.floor(reqs / 10) * 1500;
+            }
+
+            document.getElementById('junior-sub-sales').innerText = currencyFmt(salesTotal);
+            document.getElementById('junior-sub-extra').innerText = currencyFmt(extraTotal);
+            document.getElementById('junior-total-display').innerText = currencyFmt(salesTotal + extraTotal);
+        }
+
+        // ==========================================
+        // CÁLCULO SUPERVISOR
+        // ==========================================
+        let supervisorMode = 'cons';
+
+        function setSupMode(mode) {
+            supervisorMode = mode;
+            document.getElementById('btn-mode-cons').classList.toggle('active', mode === 'cons');
+            document.getElementById('btn-mode-adap').classList.toggle('active', mode === 'adap');
+            document.getElementById('sup-view-cons').classList.toggle('hidden', mode !== 'cons');
+            document.getElementById('sup-view-adap').classList.toggle('hidden', mode !== 'adap');
+            calculateSupervisor();
+        }
+
+        function updateSupSlider(val) {
+            const label = document.getElementById('sup-pct-label');
+            label.innerText = val + "%";
+            if (val >= 80) label.style.color = "#16A34A";
+            else if (val >= 50) label.style.color = "#D97706";
+            else label.style.color = "#DC2626";
+        }
+
+        function calculateSupervisor() {
+            let total = 0;
+            const note = document.getElementById('sup-note-display');
+
+            if (supervisorMode === 'adap') {
+                const base = parseFloat(document.getElementById('sup-salary').value) || 0;
+                const ok1 = document.getElementById('sup-chk-1').checked;
+                const ok2 = document.getElementById('sup-chk-2').checked;
+
+                if (ok1 && ok2) {
+                    total = base * 0.50;
+                    note.innerText = "Cumple criterios: Bono garantizado del 50%.";
+                    note.style.color = "#86EFAC";
+                } else {
+                    total = 0;
+                    note.innerText = "Se requiere cumplir itinerario y acreditación de cursos.";
+                    note.style.color = "#FCA5A5";
+                }
+            } else {
+                const hasFiles = document.getElementById('sup-check-candado').checked;
+                if (!hasFiles) {
+                    total = 0;
+                    note.innerText = "Comisión retenida 100% por expedientes faltantes.";
+                    note.style.color = "#FCA5A5";
+                } else {
+                    const pct = parseInt(document.getElementById('sup-pct-range').value) || 0;
+                    const units = parseInt(document.getElementById('sup-units').value) || 0;
+                    const factor = pct >= 80 ? 1.0 : (pct / 80);
+                    total = (units * 450 + 7000) * factor;
+
+                    if (pct >= 80) {
+                        note.innerText = "Cumple meta de retención (≥ 80% de equipo comisionando).";
+                        note.style.color = "#86EFAC";
+                    } else {
+                        note.innerText = "Equipo con baja retención. Penalización activa.";
+                        note.style.color = "#FDE68A";
+                    }
+                }
+            }
+
+            document.getElementById('sup-total-display').innerText = currencyFmt(total);
+        }
+
+        function showSavedToast() {
+            const t = document.getElementById('toast');
+            t.style.opacity = '1';
+            setTimeout(() => { t.style.opacity = '0'; }, 1800);
+        }
+
+        // Ejecutar al iniciar
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateSenior();
+            calculateJunior();
+            calculateSupervisor();
+        });
+    </script>
+</body>
+</html>
