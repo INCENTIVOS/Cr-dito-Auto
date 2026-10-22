@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Incentivos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #005CB9;
+            --primary-hover: #00458C;
+            --accent: #FEDB00;
+            --bg-body: #F4F7F9;
+            --bg-surface: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --dark-card: #0F172A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { background: var(--bg-body); color: var(--text-main); display: flex; justify-content: center; padding: 40px 20px; }
+        
+        .app-container { width: 100%; max-width: 480px; background: var(--bg-surface); border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* Header */
+        .header { background: var(--primary); color: white; padding: 24px 30px; }
+        .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .header p { font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 500; }
+
+        /* Segmented Control (Tabs) */
+        .tabs-container { padding: 20px 30px 10px; }
+        .segmented-control { display: flex; background: #F1F5F9; padding: 6px; border-radius: 14px; }
+        .tab-btn { flex: 1; padding: 10px 0; border: none; background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+
+        /* Content Area */
+        .content { padding: 10px 30px 30px; flex: 1; }
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        .card-inner { border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        
+        /* Stepper (+ / -) */
+        .stepper { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; border-radius: 16px; padding: 8px; border: 1px solid var(--border); }
+        .stepper-btn { width: 48px; height: 48px; border-radius: 12px; border: none; background: white; font-size: 24px; color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .stepper-btn:hover { background: var(--primary); color: white; }
+        .stepper-btn:active { transform: scale(0.95); }
+        .stepper-input { width: 80px; text-align: center; font-size: 32px; font-weight: 800; color: var(--primary); border: none; background: transparent; outline: none; }
+        .stepper-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+        /* Select Moderno */
+        .select-modern { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: #F8FAFC; font-size: 14px; font-weight: 600; color: var(--text-main); outline: none; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23005CB9%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 12px auto; }
+        
+        /* Toggle Switch iOS Style */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+        .toggle-info h4 { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .toggle-info p { font-size: 12px; color: var(--text-muted); line-height: 1.4; padding-right: 15px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Progress Bar Dinámica */
+        .progress-container { margin-top: 20px; background: #F8FAFC; padding: 16px; border-radius: 12px; border: 1px solid var(--border); }
+        .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+        .progress-track { width: 100%; height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; border-radius: 4px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-text { font-size: 12px; color: var(--text-muted); margin-top: 8px; text-align: center; font-weight: 500; }
+
+        /* Range Slider Supervisor */
+        .range-slider { width: 100%; margin: 15px 0; }
+        .range-slider input { width: 100%; -webkit-appearance: none; background: transparent; }
+        .range-slider input::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 6px rgba(0,92,185,0.4); border: 3px solid white; }
+        .range-slider input::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #E2E8F0; border-radius: 4px; }
+
+        /* Result Card Bottom */
+        .result-card { background: var(--dark-card); color: white; padding: 24px 30px; position: relative; overflow: hidden; }
+        .result-card::before { content: ""; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: var(--primary); opacity: 0.5; filter: blur(40px); border-radius: 50%; }
+        .result-label { font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .result-total { font-size: 42px; font-weight: 900; color: var(--accent); letter-spacing: -1px; margin-bottom: 16px; text-shadow: 0 2px 10px rgba(254, 219, 0, 0.2); }
+        
+        .breakdown { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; }
+        .breakdown-item { display: flex; justify-content: space-between; font-size: 13px; color: #CBD5E1; margin-bottom: 6px; }
+        .breakdown-item strong { color: white; font-weight: 600; font-size: 14px; }
+        
+        .alert-box { background: var(--danger-bg); border: 1px solid #FECACA; padding: 16px; border-radius: 12px; margin-top: 16px; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- Encabezado UI -->
+    <header class="header">
+        <h1>Incentivos Crédito Auto</h1>
+        <p>Calculadora Oficial</p>
+    </header>
+
+    <!-- Pestañas (Segmented Control) -->
+    <div class="tabs-container">
+        <div class="segmented-control">
+            <button class="tab-btn active" onclick="switchTab('senior', this)">Promotor (+5m)</button>
+            <button class="tab-btn" onclick="switchTab('junior', this)">Promotor (0-5m)</button>
+            <button class="tab-btn" onclick="switchTab('sup', this)">Supervisor</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- ===================================== -->
+        <!-- 1. PROMOTOR CONSOLIDADO (+5m)         -->
+        <!-- ===================================== -->
+        <div id="tab-senior" class="section active">
+            <div class="card-inner">
+                <span class="label">Créditos Colocados en el Mes</span>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="stepValue('s_units', -1)">-</button>
+                    <input type="number" id="s_units" value="5" class="stepper-input" oninput="calcSenior()">
+                    <button class="stepper-btn" onclick="stepValue('s_units', 1)">+</button>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span style="color: var(--text-muted);">Nivel actual: <strong id="s_nivel_txt" style="color: var(--primary); font-size: 14px;">$1,800 c/u</strong></span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="s_bar"></div>
+                    </div>
+                    <div class="progress-text" id="s_falta_txt">Faltan 2 unidades para el siguiente nivel</div>
+                </div>
+            </div>
+
+            <div class="card-inner">
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <h4>Bono Promotor Coach (+$4,000)</h4>
+                        <p>Tu asesorado completó curva y ambos colocaron mínimo 5 créditos este mes.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="s_coach" onchange="calcSenior()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================== -->
+        <!-- 2. PROMOTOR (0-5m)                    -->
+        <!-- ===================================== -->
+        <div id="tab-junior" class="section">
+            <div class="card-inner">
+                <span class="label">Etapa de Desarrollo</span>
+                <select id="j_mes" class="select-modern" onchange="calcJunior()">
+                    <option value="0">Mes 0 (Acreditación Inicial)</option>
+                    <option value="1">Mes 1 (Curva Introducción)</option>
+                    <option value="2">Mes 2 (Curva Ejecución)</option>
+                    <option value="3">Mes 3 (Curva Ejecución Avanzada)</option>
+                    <option value="4">Mes 4 y 5 (Afianzamiento)</option>
+                </select>
+            </div>
+
+            <!-- Mes 0 -->
+            <div id="j_m0_box" class="card-inner" style="background: #FFFBEB; border-color: #FDE68A;">
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <h4 style="color: #92400E;">Cursos y Normativas ($1,500)</h4>
+                        <p>Acreditación completa del itinerario de onboarding.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="j_cursos" checked onchange="calcJunior()">
+                        <span class="slider" style="background-color:#FCD34D;"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Mes 1 a 5 -->
+            <div id="j_ops_box" class="hidden">
+                <div class="card-inner">
+                    <span class="label">Ventas Concretadas ($1,500 c/u)</span>
+                    <div class="stepper">
+                        <button class="stepper-btn" onclick="stepValue('j_sales', -1)">-</button>
+                        <input type="number" id="j_sales" value="2" class="stepper-input" oninput="calcJunior()">
+                        <button class="stepper-btn" onclick="stepValue('j_sales', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="card-inner" id="j_reqs_box">
+                    <span class="label">Solicitudes Completas</span>
+                    <p id="j_reqs_help" style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Incentivo extra por volumen de solicitudes.</p>
+                    <div class="stepper" style="border-color: var(--primary); background: white;">
+                        <button class="stepper-btn" style="background: #F1F5F9;" onclick="stepValue('j_reqs', -1)">-</button>
+                        <input type="number" id="j_reqs" value="3" class="stepper-input" oninput="calcJunior()">
+                        <button class="stepper-btn" style="background: var(--primary); color: white;" onclick="stepValue('j_reqs', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================== -->
+        <!-- 3. SUPERVISOR                         -->
+        <!-- ===================================== -->
+        <div id="tab-sup" class="section">
+            <div class="card-inner">
+                <span class="label">Esquema del Supervisor</span>
+                <select id="su_tipo" class="select-modern" onchange="calcSup()">
+                    <option value="cons">Consolidado (>3 meses)</option>
+                    <option value="adap">Adaptación (0-3 meses)</option>
+                </select>
+            </div>
+
+            <div id="su_cons_box">
+                <div class="card-inner">
+                    <div class="progress-header">
+                        <span style="font-size: 13px;">% Equipo Comisionando</span>
+                        <strong id="su_pct_txt" style="font-size: 18px; color: var(--success);">80%</strong>
+                    </div>
+                    <div class="range-slider">
+                        <input type="range" id="su_pct" min="0" max="100" value="80" oninput="calcSup()">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
+                        <span>Riesgo Rotación</span><span>Meta Óptima ≥ 80%</span>
+                    </div>
+                </div>
+
+                <div class="card-inner">
+                    <span class="label">Volumen Total del Equipo</span>
+                    <div class="stepper">
+                        <button class="stepper-btn" onclick="stepValue('su_units', -1)">-</button>
+                        <input type="number" id="su_units" value="35" class="stepper-input" oninput="calcSup()">
+                        <button class="stepper-btn" onclick="stepValue('su_units', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <h4 style="color: #991B1B;">100% Expedientes Entregados</h4>
+                            <p style="color: #B91C1C;">Condicionante: Retiene comisión total si falta 1.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="su_candado" checked onchange="calcSup()">
+                            <span class="slider" style="background-color:#FCA5A5;"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="su_adap_box" class="hidden">
+                <div class="card-inner">
+                    <span class="label">Sueldo Base Mensual</span>
+                    <input type="number" id="su_base" value="18000" class="select-modern" style="font-size: 20px; background-image:none; padding:12px;" oninput="calcSup()">
+                </div>
+                <div class="card-inner">
+                    <div class="toggle-row" style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 12px;">
+                        <div class="toggle-info"><h4>Cumplimiento Itinerario</h4></div>
+                        <label class="switch"><input type="checkbox" id="su_itin" checked onchange="calcSup()"><span class="slider"></span></label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info"><h4>Capacitaciones Acreditadas</h4></div>
+                        <label class="switch"><input type="checkbox" id="su_train" checked onchange="calcSup()"><span class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TARJETA DE RESULTADOS (FOOTER) -->
+    <div class="result-card">
+        <div class="result-label" id="res_titulo">Incentivo Estimado</div>
+        <div class="result-total" id="res_total">$0.00</div>
+        
+        <div class="breakdown" id="res_breakdown">
+            <!-- Se actualiza con JS -->
+        </div>
+    </div>
+
+</div>
+
+<!-- LÓGICA JAVASCRIPT -->
+<script>
+    const formatoMoneda = (num) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num || 0);
+
+    function switchTab(tabId, element) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        element.classList.add('active');
+        
+        if(tabId === 'senior') calcSenior();
+        if(tabId === 'junior') calcJunior();
+        if(tabId === 'sup') calcSup();
+    }
+
+    function stepValue(inputId, step) {
+        const input = document.getElementById(inputId);
+        let val = parseInt(input.value) || 0;
+        val = Math.max(0, val + step);
+        input.value = val;
+        
+        if(inputId === 's_units') calcSenior();
+        if(inputId === 'j_sales' || inputId === 'j_reqs') calcJunior();
+        if(inputId === 'su_units') calcSup();
+    }
+
+    // Promotor (+5m)
+    const tiers = [
+        { max: 3, rate: 0, text: "$0 c/u" },
+        { max: 4, rate: 1500, text: "$1,500 c/u" },
+        { max: 6, rate: 1800, text: "$1,800 c/u" },
+        { max: 8, rate: 2600, text: "$2,600 c/u" },
+        { max: 12, rate: 3000, text: "$3,000 c/u" },
+        { max: 18, rate: 3300, text: "$3,300 c/u" },
+        { max: 9999, rate: 3600, text: "$3,600 c/u (Tope)" }
+    ];
+
+    function calcSenior() {
+        const units = parseInt(document.getElementById('s_units').value) || 0;
+        const coach = document.getElementById('s_coach').checked;
+        
+        let idx = tiers.findIndex(t => units <= t.max);
+        let currentTier = tiers[idx];
+        let nextTier = idx < tiers.length - 1 ? tiers[idx + 1] : null;
+
+        const payUnits = units * currentTier.rate;
+        const payCoach = (coach && units >= 5) ? 4000 : 0;
+        const total = payUnits + payCoach;
+
+        document.getElementById('s_nivel_txt').innerText = currentTier.text;
+        
+        const bar = document.getElementById('s_bar');
+        const faltaTxt = document.getElementById('s_falta_txt');
+        
+        if (nextTier) {
+            const prevMax = idx === 0 ? 0 : tiers[idx - 1].max;
+            const progress = units - prevMax;
+            const range = currentTier.max - prevMax;
+            const percent = Math.max(5, (progress / range) * 100);
+            
+            bar.style.width = `${percent}%`;
+            bar.style.background = 'var(--primary)';
+            
+            const faltan = currentTier.max - units + 1;
+            faltaTxt.innerHTML = `Faltan <strong>${faltan} unidad${faltan>1?'es':''}</strong> para cobrar a ${formatoMoneda(nextTier.rate)} c/u`;
+        } else {
+            bar.style.width = '100%';
+            bar.style.background = 'var(--success)';
+            faltaTxt.innerHTML = `<span style="color:var(--success); font-weight:700;">¡Has alcanzado el tabulador máximo!</span>`;
+        }
+
+        document.getElementById('res_titulo').innerText = "Total a Percibir (Promotor)";
+        document.getElementById('res_total').innerText = formatoMoneda(total);
+        document.getElementById('res_breakdown').innerHTML = `
+            <div class="breakdown-item"><span>Comisión Colocaciones</span><strong>${formatoMoneda(payUnits)}</strong></div>
+            <div class="breakdown-item"><span>Bono Promotor Coach</span><strong style="color:${coach && units<5 ? 'var(--danger)' : 'white'}">${coach && units<5 ? 'Requiere mín. 5 ventas' : formatoMoneda(payCoach)}</strong></div>
+        `;
+    }
+
+    // Promotor (0-5m)
+    function calcJunior() {
+        const mes = parseInt(document.getElementById('j_mes').value);
+        let total = 0, pSales = 0, pExtra = 0;
+
+        document.getElementById('j_m0_box').classList.toggle('hidden', mes !== 0);
+        document.getElementById('j_ops_box').classList.toggle('hidden', mes === 0);
+        
+        const reqsBox = document.getElementById('j_reqs_box');
+        const reqsHelp = document.getElementById('j_reqs_help');
+        
+        if (mes === 0) {
+            pExtra = document.getElementById('j_cursos').checked ? 1500 : 0;
+        } else {
+            const v = parseInt(document.getElementById('j_sales').value) || 0;
+            const r = parseInt(document.getElementById('j_reqs').value) || 0;
+            pSales = v * 1500;
+            
+            if (mes >= 1 && mes <= 3) {
+                reqsBox.classList.remove('hidden');
+                let divisor = mes === 1 ? 3 : (mes === 2 ? 7 : 10);
+                reqsHelp.innerHTML = `<strong style="color:var(--primary)">+ $1,500</strong> por cada ${divisor} solicitudes completas.`;
+                pExtra = Math.floor(r / divisor) * 1500;
+            } else {
+                reqsBox.classList.add('hidden');
+            }
+        }
+
+        total = pSales + pExtra;
+
+        document.getElementById('res_titulo').innerText = "Total a Percibir (Promotor 0-5m)";
+        document.getElementById('res_total').innerText = formatoMoneda(total);
+        document.getElementById('res_breakdown').innerHTML = `
+            <div class="breakdown-item"><span>Por Ventas (Directo)</span><strong>${formatoMoneda(pSales)}</strong></div>
+            <div class="breakdown-item"><span>Incentivo Extra (Solicitudes/Cursos)</span><strong>${formatoMoneda(pExtra)}</strong></div>
+        `;
+    }
+
+    // Supervisor
+    function calcSup() {
+        const tipo = document.getElementById('su_tipo').value;
+        let total = 0;
+        let msg = "";
+        let msgColor = "";
+
+        document.getElementById('su_cons_box').classList.toggle('hidden', tipo !== 'cons');
+        document.getElementById('su_adap_box').classList.toggle('hidden', tipo === 'adap');
+
+        if (tipo === 'adap') {
+            const base = parseFloat(document.getElementById('su_base').value) || 0;
+            const ok = document.getElementById('su_itin').checked && document.getElementById('su_train').checked;
+            
+            if (ok) {
+                total = base * 0.50;
+                msg = "✔ Bono garantizado de 50% por cumplimiento de procesos.";
+                msgColor = "var(--success)";
+            } else {
+                msg = "⚠ Retenido: Debes acreditar cursos e itinerario completo.";
+                msgColor = "var(--danger)";
+            }
+        } else {
+            const pct = parseInt(document.getElementById('su_pct').value) || 0;
+            const units = parseInt(document.getElementById('su_units').value) || 0;
+            const hasFiles = document.getElementById('su_candado').checked;
+
+            const pctTxt = document.getElementById('su_pct_txt');
+            pctTxt.innerText = pct + "%";
+            pctTxt.style.color = pct >= 80 ? 'var(--success)' : (pct >= 50 ? 'var(--accent)' : 'var(--danger)');
+
+            if (!hasFiles) {
+                msg = "✖ 100% de la comisión retenida por falta de expedientes.";
+                msgColor = "var(--danger)";
+            } else {
+                let factor = pct >= 80 ? 1.0 : (pct / 80);
+                total = (units * 450 + 7000) * factor;
+
+                if (pct >= 80) {
+                    msg = "✔ Excelente: Equipo estable y altamente productivo.";
+                    msgColor = "var(--success)";
+                } else {
+                    msg = "⚠ Penalización aplicada por baja retención/comisionamiento.";
+                    msgColor = "var(--accent)";
+                }
+            }
+        }
+
+        document.getElementById('res_titulo').innerText = "Incentivo Supervisor";
+        document.getElementById('res_total').innerText = formatoMoneda(total);
+        document.getElementById('res_breakdown').innerHTML = `
+            <div style="font-size:12px; font-weight:600; color:${msgColor}; margin-top:5px;">${msg}</div>
+        `;
+    }
+
+    window.onload = () => { calcSenior(); }
+</script>
+</body>
+</html>
